@@ -68,7 +68,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
-
               - column:
                   name: password
                   type: VARCHAR(100)
@@ -80,7 +79,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
-
   - changeSet:
       id: 3
       author: afonso.joaoS
