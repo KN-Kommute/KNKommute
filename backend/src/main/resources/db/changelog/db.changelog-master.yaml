@@ -67,9 +67,10 @@ databaseChangeLog:
                   type: VARCHAR(100)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: password
-                  type: VARCHAR(50)
+                  type: VARCHAR(100)
                   constraints:
                     nullable: false
               - column:
@@ -77,6 +78,7 @@ databaseChangeLog:
                   type: VARCHAR(20)
                   constraints:
                     nullable: false
+                    unique: true
   - changeSet:
       id: 3
       author: afonso.joaoS
@@ -111,18 +113,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: date
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-                  constraints:
-                    nullable: false
-              - column:
                   name: total_value
                   type: FLOAT
                   constraints:
                     nullable: true
               - column:
                   name: max_users
-                  type: int
+                  type: INT
                   constraints:
-                    nullable: true
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: rides
+            baseColumnNames: user_owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_rides_user_owner
+
