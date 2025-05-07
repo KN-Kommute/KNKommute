@@ -1,6 +1,7 @@
 package kn.kommute.app.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Entity
@@ -18,10 +19,11 @@ public class User {
     @Column(nullable = false, length = 40)
     private String name;
 
+    @Email
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Column(name = "phone_number", unique = true, nullable = false, length = 20)
