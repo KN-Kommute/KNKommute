@@ -128,4 +128,3 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             constraintName: fk_rides_user_owner
-
