@@ -62,7 +62,6 @@ public class UserRepositoryTest {
         assertThrows(DataIntegrityViolationException.class,
                 () -> userRepository.saveAndFlush(user2),
                 "Expected a DataIntegrityViolationException due to duplicate email");
-
     }
 
     @Test
