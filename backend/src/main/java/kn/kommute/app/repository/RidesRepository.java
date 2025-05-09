@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface RidesRepository extends JpaRepository<Rides, Long> {
     Optional<Rides> findByOrigin(String origin);
-    // Aqui podes adicionar métodos customizados, se precisares
 }

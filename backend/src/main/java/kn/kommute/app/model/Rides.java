@@ -21,6 +21,7 @@ public class Rides {
     @Column(nullable = false, length = 255)
     private String destination;
 
+    @Column(nullable = false )
     private LocalDateTime time;
 
     @ManyToOne
