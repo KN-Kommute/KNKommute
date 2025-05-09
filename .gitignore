@@ -20,9 +20,6 @@ pnpm-debug.log*
 .vscode/
 .idea/
 
-# Mac system files
-.DS_Store
-
 # === Java/Spring Boot (backend) ===
 target/
 *.class
@@ -51,7 +48,6 @@ spring.log
 *.iml
 *.ipr
 *.iws
-.idea/
 
 # Eclipse
 .project
@@ -62,11 +58,6 @@ bin/
 # VS Code
 *.code-workspace
 
-# === Logs ===
-logs/
-*.log
-
 # === OS generated files ===
 ehthumbs.db
 Icon?
-Thumbs.db
