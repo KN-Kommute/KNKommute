@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveAndFindByEmail() {
         User user = new User();
-        user.setName("Teste User");
+        user.setName("User Test");
         user.setEmail("teste@example.com");
         user.setPassword("12345678");
         user.setPhoneNumber("910000000");
@@ -34,12 +35,19 @@ public class UserRepositoryTest {
         Optional<User> found = userRepository.findByEmail("teste@example.com");
 
         assertTrue(found.isPresent());
-        assertEquals("Teste User", found.get().getName());
-        assertEquals("910000000", found.get().getPhoneNumber());
+
+        User foundUser = found.get();
+        assertNotNull(foundUser.getId());
+        assertEquals("User Test", foundUser.getName());
+        assertEquals("teste@example.com", foundUser.getEmail());
+        assertEquals("12345678", foundUser.getPassword());
+        assertEquals("910000000", foundUser.getPhoneNumber());
     }
 
+
+
     @Test
-    public void testFindByEmail_NotFound() {
+    public void testFindByEmailNotFound() {
         Optional<User> found = userRepository.findByEmail("naoexiste@example.com");
         assertTrue(found.isEmpty());
     }
@@ -51,9 +59,10 @@ public class UserRepositoryTest {
 
         userRepository.save(user1);
 
-        assertThrows(Exception.class, () -> {
-            userRepository.saveAndFlush(user2);
-        });
+        assertThrows(DataIntegrityViolationException.class,
+                () -> userRepository.saveAndFlush(user2),
+                "Expected a DataIntegrityViolationException due to duplicate email");
+
     }
 
     @Test
@@ -63,9 +72,9 @@ public class UserRepositoryTest {
 
         userRepository.save(user1);
 
-        assertThrows(Exception.class, () -> {
-            userRepository.saveAndFlush(user2);
-        });
+        assertThrows(DataIntegrityViolationException.class,
+                () -> userRepository.saveAndFlush(user2),
+                "Expected a DataIntegrityViolationException due to duplicate phone number");
     }
 
 }
