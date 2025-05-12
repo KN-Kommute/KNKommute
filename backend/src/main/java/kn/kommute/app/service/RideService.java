@@ -1,7 +1,7 @@
 package kn.kommute.app.service;
 
-import kn.kommute.app.model.Rides;
-import kn.kommute.app.repository.RidesRepository;
+import kn.kommute.app.model.Ride;
+import kn.kommute.app.repository.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,35 +11,35 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class RidesService {
+public class RideService {
 
-    private final RidesRepository ridesRepository;
+    private final RideRepository ridesRepository;
 
     @Autowired
-    public RidesService(RidesRepository ridesRepository) {
+    public RideService(RideRepository ridesRepository) {
         this.ridesRepository = ridesRepository;
     }
 
-    public List<Rides> findAllRides() {
+    public List<Ride> findAllRides() {
         return ridesRepository.findAll();
     }
 
-    public Optional<Rides> findRideById(Long id) {
+    public Optional<Ride> findRideById(Long id) {
         return ridesRepository.findById(id);
     }
 
-    public Optional<Rides> findRideByOrigin(String origin) {
+    public Optional<Ride> findRideByOrigin(String origin) {
         return ridesRepository.findByOrigin(origin);
     }
 
-    public Rides saveRide(Rides ride) {
+    public Ride saveRide(Ride ride) {
         return ridesRepository.save(ride);
     }
 
-    public Rides updateRide(Long id, Rides updatedRide) {
-        Optional<Rides> existingRide = ridesRepository.findById(id);
+    public Ride updateRide(Long id, Ride updatedRide) {
+        Optional<Ride> existingRide = ridesRepository.findById(id);
         if (existingRide.isPresent()) {
-            Rides ride = existingRide.get();
+            Ride ride = existingRide.get();
             ride.setOrigin(updatedRide.getOrigin());
             ride.setDestination(updatedRide.getDestination());
             ride.setTime(updatedRide.getTime());
