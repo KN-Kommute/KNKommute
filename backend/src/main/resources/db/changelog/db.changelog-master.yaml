@@ -128,3 +128,16 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             constraintName: fk_rides_user_owner
+  - changeSet:
+      id: 4
+      author: diogo.silva
+      changes:
+        - addColumn:
+            tableName: rides
+            columns:
+              - column:
+                  name: active_users
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
