@@ -1,0 +1,27 @@
+/* common.css */
+.logo-wrapper,
+.header-icon {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: -20px;
+}
+
+.car-logo,
+.top-car-icon {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.anchor-logo,
+.anchor-icon {
+  position: absolute;
+  top: -27px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: auto;
+}
