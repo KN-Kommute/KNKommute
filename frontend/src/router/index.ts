@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
+import UserInterface from '@/views/UserInterface.vue'
+import Rides from '@/views/Rides.vue'
 
 const routes = [
   {
@@ -20,17 +22,17 @@ const routes = [
   {
     path: '/dashboard',
     name: 'UserInterface',
-    component: () => import('@/views/UserInterface.vue') // lazy load
+    component: UserInterface // UserInterface para dashboard
   },
   {
     path: '/rides',
     name: 'Rides',
-    component: () => import('@/views/Rides.vue') // lazy load
+    component: Rides // Componente específico para Rides
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('@/views/UserInterface.vue') // lazy load
+    component: UserInterface // Assumindo que Profile é uma parte do UserInterface
   }
 ]
 

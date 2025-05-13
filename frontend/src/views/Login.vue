@@ -40,7 +40,7 @@
       </div>
     </template>
 
-    <script setup>
+    <script setup lang="ts">
     import { ref } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -58,7 +58,7 @@
       return emailInput === validUser.email && passwordInput === validUser.password
     }
 
-    function handleLogin() {
+    function handleLogin()   {
       if (login(email.value, password.value)) {
         errorMessage.value = ''
         router.push('/dashboard')
