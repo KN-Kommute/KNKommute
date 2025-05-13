@@ -3,65 +3,42 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="user-header">
-                <img
-                        src="@/assets/userprofile.png"
-                        alt="User Avatar"
-                        class="avatar"
-                />
+                <img src="@/assets/userprofile.png" alt="User Avatar" class="avatar" />
                 <div class="user-text">
                     <span class="welcome">Welcome,</span>
-
                 </div>
             </div>
 
             <nav class="nav">
-                <button class="nav-item active"
-                @click="goToRides">Rides
-            </button>
-            <button class="nav-item"
-            @click="goToProfile">Profile
-        </button>
+                <button class="nav-item active" @click="goToRides">Rides</button>
+            <button class="nav-item" @click="goToProfile">Profile</button>
     </nav>
 
-    <button class="logout-btn"
-    @click="handleLogout">Logout
-</button>
+    <button class="logout-btn" @click="handleLogout">Logout</button>
         </aside>
 
         <!-- Main Content -->
 <main class="content">
 <div class="profile-section">
-    <!-- Topo: carro + âncora -->
+    <!-- Car + Anchor -->
     <div class="header-icon">
-        <img
-                src="@/assets/Vector.png"
-                alt="Car Icon"
-                class="top-car-icon"
-        />
-        <img
-                src="@/assets/image 1.png"
-                alt="Anchor Icon"
-                class="anchor-icon"
-        />
+        <img src="@/assets/Vector.png" alt="Car Icon" class="top-car-icon" />
+        <img src="@/assets/image 1.png" alt="Anchor Icon" class="anchor-icon" />
     </div>
 
-    <!-- Título + botão Create -->
+    <!-- Title + Create button -->
     <div class="header-row">
         <h2 class="profile-title">Rides</h2>
         <button class="create-btn">Create</button>
     </div>
 
-    <hr class="divider"/>
+    <hr class="divider" />
 
-    <!-- Empty state central -->
+    <!-- Empty State -->
     <div class="empty-state">
-        <img
-                src="@/assets/car_repair.png"
-                alt="No Rides"
-                class="empty-img"
-        />
+        <img src="@/assets/car_repair.png" alt="No Rides" class="empty-img" />
         <p>
-            There are no created rides<br/>
+            There are no created rides<br />
             You can be the first!
         </p>
     </div>
@@ -70,7 +47,7 @@
         </div>
         </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -178,16 +155,15 @@ function goToRides() {
 .profile-section {
   max-width: 600px;
   margin: 0 auto;
-  padding-top: 30px; /* Ajustável para subir/descer todo o bloco */
+  padding-top: 30px;
 }
 
-/* Carro + Âncora */
 .header-icon {
   position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  margin-top: -20px; /* Sobe o bloco inteiro */
+  margin-top: -20px;
 }
 
 .top-car-icon {
@@ -196,11 +172,10 @@ function goToRides() {
 
 .anchor-icon {
   position: absolute;
-  top: -30px; /* Ajusta a âncora acima do carro */
+  top: -30px;
   width: 30px;
 }
 
-/* Título + botão */
 .header-row {
   display: flex;
   justify-content: space-between;
@@ -231,7 +206,6 @@ function goToRides() {
   margin-bottom: 32px;
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
