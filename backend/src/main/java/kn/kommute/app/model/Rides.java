@@ -31,4 +31,7 @@ public class Rides {
     private Float totalValue;
 
     private int maxUsers;
+
+    @Column(name = "total_carpoolers")
+    private int totalCarpoolers;
 }

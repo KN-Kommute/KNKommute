@@ -136,7 +136,7 @@ databaseChangeLog:
             tableName: rides
             columns:
               - column:
-                  name: active_users
+                  name: total_carpoolers
                   type: INT
                   defaultValueNumeric: 0
                   constraints:
