@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Rides {
+public class Ride {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
