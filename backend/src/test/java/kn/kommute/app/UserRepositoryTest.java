@@ -48,6 +48,12 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByEmailNotFound() {
+        assertEquals("Teste User", found.get().getName());
+        assertEquals("910000000", found.get().getPhoneNumber());
+    }
+
+    @Test
+    public void testFindByEmail_NotFound() {
         Optional<User> found = userRepository.findByEmail("naoexiste@example.com");
         assertTrue(found.isEmpty());
     }
@@ -75,6 +81,7 @@ public class UserRepositoryTest {
         assertThrows(DataIntegrityViolationException.class,
                 () -> userRepository.saveAndFlush(user2),
                 "Expected a DataIntegrityViolationException due to duplicate phone number");
+
     }
 
 }
