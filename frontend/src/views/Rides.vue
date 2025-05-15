@@ -1,46 +1,53 @@
 <template>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="user-header">
-                <img src="@/assets/userprofile.png" alt="User Avatar" class="avatar" />
-                <div class="user-text">
-                    <span class="welcome">Welcome,</span>
+    <div class="RidesPage">
+        <aside :class="['RidesPage__sidebar', { 'RidesPage__sidebar--open': sidebarVisible }]">
+            <div class="RidesPage__user-header">
+
+                <img src="@/assets/userprofile.png" alt="User Avatar" class="RidesPage__avatar" />
+                <div class="RidesPage__user-text">
+                    <span class="RidesPage__welcome">Welcome,</span>
                 </div>
             </div>
 
-            <nav class="nav">
-                <button class="nav-item active" @click="goToRides">Rides</button>
-            <button class="nav-item" @click="goToProfile">Profile</button>
+            <nav class="RidesPage__nav">
+                <button
+                        class="RidesPage__nav-item"
+                        :class="{ 'RidesPage__nav-item--active': activePage === 'rides' }"
+                @click="goToRides"
+                >
+                Rides
+            </button>
+            <button
+                    class="RidesPage__nav-item"
+                    :class="{ 'RidesPage__nav-item--active': activePage === 'profile' }"
+            @click="goToProfile"
+            >
+            Profile
+        </button>
     </nav>
 
-    <button class="logout-btn" @click="handleLogout">Logout</button>
+    <button class="RidesPage__logout-btn" @click="handleLogout">Logout</button>
         </aside>
 
-        <!-- Main Content -->
-<main class="content">
-<div class="profile-section">
-    <!-- Car + Anchor -->
-    <div class="header-icon">
-        <img src="@/assets/Vector.png" alt="Car Icon" class="top-car-icon" />
-        <img src="@/assets/image 1.png" alt="Anchor Icon" class="anchor-icon" />
+<button class="RidesPage__toggle-sidebar" @click="toggleSidebar">☰</button>
+
+<main class="RidesPage__content">
+<div class="RidesPage__rides-section">
+    <div class="RidesPage__header-icon">
+        <img src="@/assets/Vector.png" alt="Car Icon" class="RidesPage__top-car-icon" />
+        <img src="@/assets/image 1.png" alt="Anchor Icon" class="RidesPage__anchor-icon" />
     </div>
 
-    <!-- Title + Create button -->
-    <div class="header-row">
-        <h2 class="profile-title">Rides</h2>
-        <button class="create-btn">Create</button>
+    <div class="RidesPage__header-row">
+        <h2 class="RidesPage__rides-title">Rides</h2>
+        <button class="RidesPage__create-btn">Create</button>
     </div>
 
-    <hr class="divider" />
+    <hr class="RidesPage__divider" />
 
-    <!-- Empty State -->
-    <div class="empty-state">
-        <img src="@/assets/car_repair.png" alt="No Rides" class="empty-img" />
-        <p>
-            There are no created rides<br />
-            You can be the first!
-        </p>
+    <div class="RidesPage__empty-rides">
+        <img src="@/assets/car_repair.png" alt="No Rides" class="RidesPage__no-rides-image" />
+        <p class="RidesPage__no-rides-text">You haven’t created any rides yet.</p>
     </div>
 </div>
 </main>
@@ -49,76 +56,134 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+
 
 const router = useRouter()
+
+const sidebarVisible = ref(false)
+const activePage = ref('rides')
 
 function handleLogout() {
   router.push('/login')
 }
 
 function goToProfile() {
+  activePage.value = 'profile'
   router.push('/dashboard')
 }
 
 function goToRides() {
+  activePage.value = 'rides'
   router.push('/rides')
+}
+
+function toggleSidebar() {
+  sidebarVisible.value = !sidebarVisible.value
 }
 </script>
 
-<style scoped>
-.dashboard {
+<style scoped lang="scss">
+
+.RidesPage {
   display: flex;
   height: 100vh;
   font-family: 'Inter', sans-serif;
   font-size: 18px;
+  position: relative;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 400px;
+
+.RidesPage__toggle-sidebar {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 20px;
   background-color: #002f6c;
   color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 30px 24px;
+  border: none;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
 }
 
-.user-header {
+
+.RidesPage__sidebar {
+  width: 350px;
+  background-color: #002f6c;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 95%; /* kept as requested */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 30px 24px;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  z-index: 999;
+  overflow-y: auto;
+}
+
+
+.RidesPage__sidebar--open {
+  transform: translateX(0);
+}
+
+
+@media (min-width: 768px) {
+  .RidesPage__sidebar {
+    transform: none !important;
+    position: relative;
+  }
+
+  .RidesPage__toggle-sidebar {
+    display: none;
+  }
+
+  .RidesPage__content {
+    margin-left: 300px;
+  }
+}
+
+
+.RidesPage__user-header {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.avatar {
+
+.RidesPage__avatar {
   width: 70px;
   height: 70px;
   border-radius: 50%;
 }
 
-.user-text {
+
+.RidesPage__user-text {
   display: flex;
   flex-direction: column;
 }
 
-.welcome {
+
+.RidesPage__welcome {
   font-size: 16px;
   opacity: 0.9;
 }
 
-.username {
-  font-weight: 600;
-  font-size: 18px;
-}
 
-.nav {
+.RidesPage__nav {
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-top: 40px;
 }
 
-.nav-item {
+
+.RidesPage__nav-item {
   background: none;
   border: none;
   color: white;
@@ -128,13 +193,15 @@ function goToRides() {
   cursor: pointer;
 }
 
-.nav-item.active {
+
+.RidesPage__nav-item--active {
   background-color: white;
   color: #002f6c;
   border-radius: 10px;
 }
 
-.logout-btn {
+
+.RidesPage__logout-btn {
   background-color: #d92d20;
   color: white;
   border: none;
@@ -143,84 +210,135 @@ function goToRides() {
   font-size: 16px;
   cursor: pointer;
   width: 100%;
-  margin-top: auto;
+  margin-top: auto; /* push logout to the bottom */
 }
 
-/* Main Content */
-.content {
+
+.RidesPage__content {
   flex: 1;
   padding: 40px 60px;
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 0;
 }
 
-.profile-section {
-  max-width: 600px;
+
+.RidesPage__rides-section {
+  max-width: 800px;
   margin: 0 auto;
   padding-top: 30px;
 }
 
-.header-icon {
+
+.RidesPage__header-icon {
   position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  margin-top: -20px;
 }
 
-.top-car-icon {
+
+.RidesPage__top-car-icon {
   width: 100px;
 }
 
-.anchor-icon {
+
+.RidesPage__anchor-icon {
   position: absolute;
   top: -30px;
   width: 30px;
 }
 
-.header-row {
+
+.RidesPage__header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.profile-title {
+
+.RidesPage__rides-title {
   color: #002f6c;
   font-size: 24px;
   font-weight: 600;
   margin: 0;
 }
 
-.create-btn {
-  background-color: #002f6c;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-}
 
-.divider {
+.RidesPage__divider {
   border: none;
   border-top: 1px solid #002f6c;
   margin-bottom: 32px;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+
+.RidesPage__empty-rides {
+  text-align: center;
+  margin-top: 40px;
 }
 
-.empty-img {
-  max-width: 200px;
-  margin-bottom: 20px;
+
+.RidesPage__no-rides-image {
+  width: 400px;
+  margin-bottom: 40px;
 }
 
-.empty-state p {
+
+.RidesPage__no-rides-text {
+  font-size: 18px;
   color: #002f6c;
+}
+
+
+.RidesPage__create-btn {
+  background-color: #002f6c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
   font-size: 16px;
-  line-height: 1.4;
+  cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+  /* Show sidebar toggle button */
+  .RidesPage__toggle-sidebar {
+    display: block;
+  }
+
+
+  .RidesPage__content {
+    margin-left: 0;
+    padding: 20px 24px;
+  }
+
+  .RidesPage__sidebar {
+    width: 80%;
+  }
+
+
+  .RidesPage__sidebar--open {
+    transform: translateX(0);
+  }
+
+
+  .RidesPage__header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+
+  .RidesPage__create-btn {
+    align-self: flex-start;
+  }
+
+
+  .RidesPage__no-rides-image {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 </style>

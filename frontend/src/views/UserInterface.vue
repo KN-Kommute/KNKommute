@@ -1,45 +1,46 @@
 <template>
-  <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="user-header">
-        <img src="@/assets/userprofile.png" alt="User Avatar" class="avatar" />
-        <div class="user-text">
-          <span class="welcome">Welcome,</span>
+  <div class="ProfilePage">
+
+    <aside :class="['ProfilePage__sidebar', { 'ProfilePage__sidebar--open': sidebarVisible }]">
+      <div class="ProfilePage__user-header">
+        <img src="@/assets/userprofile.png" alt="User Avatar" class="ProfilePage__avatar" />
+        <div class="ProfilePage__user-text">
+          <span class="ProfilePage__welcome">Welcome,</span>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="nav-item" @click="goToRides">Rides</button>
-      <button class="nav-item active">Profile</button>
-    </nav>
+      <nav class="ProfilePage__nav">
+        <button class="ProfilePage__nav-item" :class="{ 'ProfilePage__nav-item--active': activePage === 'rides' }" @click="goToRides">Rides</button>
+      <button class="ProfilePage__nav-item" :class="{ 'ProfilePage__nav-item--active': activePage === 'profile' }" @click="goToProfile">Profile</button>
+  </nav>
 
-    <button class="logout-btn" @click="handleLogout">Logout</button>
-</aside>
+  <button class="ProfilePage__logout-btn" @click="handleLogout">Logout</button>
+        </aside>
 
-        <!-- Main Content -->
-<main class="content">
-<div class="profile-section">
-  <!-- Car + Anchor -->
-  <div class="header-icon">
-    <img src="@/assets/Vector.png" alt="Car Icon" class="top-car-icon" />
-    <img src="@/assets/image 1.png" alt="Anchor Icon" class="anchor-icon" />
+<button class="ProfilePage__toggle-sidebar" @click="toggleSidebar">☰</button>
+
+<main class="ProfilePage__content">
+<div class="ProfilePage__profile-section">
+
+  <div class="ProfilePage__header-icon">
+    <img src="@/assets/Vector.png" alt="Car Icon" class="ProfilePage__car-icon" />
+    <img src="@/assets/image 1.png" alt="Anchor Icon" class="ProfilePage__anchor-icon" />
   </div>
 
-  <!-- Title Only (no create button) -->
-  <div class="header-row">
-    <h2 class="profile-title">Profile</h2>
+
+  <div class="ProfilePage__header-row">
+    <h2 class="ProfilePage__profile-title">Profile</h2>
   </div>
 
-  <hr class="divider" />
+  <hr class="ProfilePage__divider" />
 
-  <!-- Profile Form -->
-  <form class="profile-form">
+
+  <form class="ProfilePage__form">
     <input type="email" placeholder="Email" />
     <input type="text" placeholder="Mobile Number" />
     <input type="password" placeholder="New password" />
     <input type="password" placeholder="Repeat new password" />
-    <button type="submit" class="save-btn">Save profile</button>
+    <button type="submit" class="ProfilePage__save-btn">Save profile</button>
   </form>
 </div>
 </main>
@@ -48,72 +49,129 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 const router = useRouter()
+const sidebarVisible = ref(false)
+const activePage = ref('profile')
 
 function handleLogout() {
   router.push('/login')
 }
 
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 768) {
+    sidebarVisible.value = false
+  }
+}
+
+function goToProfile() {
+  activePage.value = 'profile'
+  router.push('/dashboard')
+  closeSidebarOnMobile()
+}
+
 function goToRides() {
+  activePage.value = 'rides'
   router.push('/rides')
+  closeSidebarOnMobile()
+}
+
+function toggleSidebar() {
+  sidebarVisible.value = !sidebarVisible.value
 }
 </script>
 
-<style scoped>
-.dashboard {
+<style scoped lang="scss">
+.ProfilePage {
   display: flex;
   height: 100vh;
   font-family: 'Inter', sans-serif;
   font-size: 18px;
+  position: relative;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 400px;
+.ProfilePage__toggle-sidebar {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 20px;
   background-color: #002f6c;
   color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 30px 24px;
+  border: none;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
 }
 
-.user-header {
+.ProfilePage__sidebar {
+  width: 350px;
+  background-color: #002f6c;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 95%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 30px 24px;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  z-index: 999;
+  overflow-y: auto;
+}
+
+.ProfilePage__sidebar--open {
+  transform: translateX(0);
+}
+
+@media (min-width: 768px) {
+  .ProfilePage__sidebar {
+    transform: none !important;
+    position: relative;
+  }
+
+  .ProfilePage__toggle-sidebar {
+    display: none;
+  }
+
+  .ProfilePage__content {
+    margin-left: 350px;
+  }
+}
+
+.ProfilePage__user-header {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.avatar {
+.ProfilePage__avatar {
   width: 70px;
   height: 70px;
   border-radius: 50%;
 }
 
-.user-text {
+.ProfilePage__user-text {
   display: flex;
   flex-direction: column;
 }
 
-.welcome {
+.ProfilePage__welcome {
   font-size: 16px;
   opacity: 0.9;
 }
 
-.username {
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.nav {
+.ProfilePage__nav {
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-top: 40px;
 }
 
-.nav-item {
+.ProfilePage__nav-item {
   background: none;
   border: none;
   color: white;
@@ -123,13 +181,13 @@ function goToRides() {
   cursor: pointer;
 }
 
-.nav-item.active {
+.ProfilePage__nav-item--active {
   background-color: white;
   color: #002f6c;
   border-radius: 10px;
 }
 
-.logout-btn {
+.ProfilePage__logout-btn {
   background-color: #d92d20;
   color: white;
   border: none;
@@ -141,71 +199,71 @@ function goToRides() {
   margin-top: auto;
 }
 
-/* Main Content */
-.content {
+.ProfilePage__content {
   flex: 1;
   padding: 40px 60px;
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 0;
 }
 
-.profile-section {
-  max-width: 600px;
+.ProfilePage__profile-section {
+  max-width: 800px;
   margin: 0 auto;
   padding-top: 30px;
 }
 
-.header-icon {
+.ProfilePage__header-icon {
   position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  margin-top: -20px;
 }
 
-.top-car-icon {
+.ProfilePage__car-icon {
   width: 100px;
 }
 
-.anchor-icon {
+.ProfilePage__anchor-icon {
   position: absolute;
   top: -30px;
   width: 30px;
 }
 
-.header-row {
+.ProfilePage__header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.profile-title {
+.ProfilePage__profile-title {
   color: #002f6c;
   font-size: 24px;
   font-weight: 600;
   margin: 0;
 }
 
-.divider {
+.ProfilePage__divider {
   border: none;
   border-top: 1px solid #002f6c;
   margin-bottom: 32px;
 }
 
-.profile-form {
+.ProfilePage__form {
   display: flex;
   flex-direction: column;
   gap: 20px;
   font-size: 16px;
 }
 
-.profile-form input {
+.ProfilePage__form input {
   padding: 14px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
 
-.save-btn {
+.ProfilePage__save-btn {
   background-color: #002f6c;
   color: white;
   border: none;
@@ -215,5 +273,30 @@ function goToRides() {
   align-self: flex-end;
   font-size: 16px;
   border-radius: 6px;
+}
+
+
+@media (max-width: 768px) {
+  .ProfilePage__toggle-sidebar {
+    display: block;
+  }
+
+  .ProfilePage__content {
+    margin-left: 0;
+  }
+
+  .ProfilePage__sidebar {
+    width: 80%;
+  }
+
+  .ProfilePage__header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ProfilePage__save-btn {
+    align-self: flex-start;
+  }
 }
 </style>

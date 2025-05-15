@@ -32,7 +32,7 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
-    component: UserInterface // Assumindo que Profile é uma parte do UserInterface
+    component: UserInterface
   }
 ]
 
