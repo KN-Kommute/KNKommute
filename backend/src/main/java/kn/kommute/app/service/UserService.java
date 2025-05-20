@@ -39,6 +39,11 @@ public class UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalStateException("Email already registered");
         }
+        if(userRepository.findByphoneNumber(phoneNumber).isPresent()){
+            throw new IllegalStateException("Phone Number already registered");
+        }
+
+
 
         String encodedPassword = passwordEncoder.encode(password);
         User newUser = new User(name, email, encodedPassword, phoneNumber);
@@ -62,6 +67,12 @@ public class UserService {
 
     public String updateContact(User user, String contact) {
         user.setPhoneNumber(contact);
+        if (user.getPhoneNumber().equals(contact)) {
+            return "Contact unchanged (same as current)";
+        }
+        if(userRepository.findByphoneNumber(contact).isPresent()) {
+            throw new IllegalStateException("Phone Number already registered");
+        }
         userRepository.save(user);
         return "Contact updated successfully";
     }
