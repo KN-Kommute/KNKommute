@@ -10,13 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/auth/")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
@@ -42,7 +44,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getProfile(@RequestParam String email) {
         try {
             User user = userService.getProfile(email);
-            return ResponseEntity.ok(UserMapper.toDTO(user));
+            return ResponseEntity.ok(userMapper.toDTO(user));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -68,4 +70,3 @@ public class UserController {
         return ResponseEntity.ok(userService.updateName(user, name));
     }
 }
-
