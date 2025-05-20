@@ -1,25 +1,13 @@
 package kn.kommute.app.mapper;
 
-
 import kn.kommute.app.dto.UserDTO;
 import kn.kommute.app.model.User;
+import org.mapstruct.Mapper;
 
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public static UserDTO toDTO(User user) {
-        return new UserDTO(
-                user.getName(),
-                user.getEmail(),
-                user.getPhoneNumber()
-        );
-    }
+    UserDTO toDTO(User user);
 
-    public static User toEntity(UserDTO dto) {
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPhoneNumber(dto.getPhoneNumber());
-        return user;
-    }
+    User toEntity(UserDTO userDTO);
 }
-
