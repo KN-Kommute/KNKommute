@@ -3,6 +3,7 @@ package kn.kommute.app.service;
 import kn.kommute.app.model.User;
 import kn.kommute.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,42 +15,60 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public Optional<User> findUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public User updateUser(Long id, User updatedUser) {
-        Optional<User> existingUser = userRepository.findById(id);
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setName(updatedUser.getName());
-            user.setEmail(updatedUser.getEmail());
-            user.setPassword(updatedUser.getPassword());
-            user.setPhoneNumber(updatedUser.getPhoneNumber());
-            return userRepository.save(user);
+    public String login(String email, String password) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
+            return "Login successful";
         }
-        return null;
+        throw new RuntimeException("Invalid credentials");
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public String register(String name, String email, String password, String confirmPassword, String phoneNumber) {
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalStateException("Email already registered");
+        }
+
+        String encodedPassword = passwordEncoder.encode(password);
+        User newUser = new User(name, email, encodedPassword, phoneNumber);
+        userRepository.save(newUser);
+        return "User registered successfully";
+    }
+
+    public User getProfile(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public String updatePassword(User user, String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Invalid current password");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return "Password updated successfully";
+    }
+
+    public String updateContact(User user, String contact) {
+        user.setPhoneNumber(contact);
+        userRepository.save(user);
+        return "Contact updated successfully";
+    }
+
+    public String updateName(User user, String name) {
+        user.setName(name);
+        userRepository.save(user);
+        return "Name updated successfully";
     }
 }

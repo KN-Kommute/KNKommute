@@ -1,72 +1,71 @@
 package kn.kommute.app.controller;
 
+import kn.kommute.app.dto.UserDTO;
+import kn.kommute.app.mapper.UserMapper;
 import kn.kommute.app.model.User;
-import kn.kommute.app.repository.UserRepository;
+import kn.kommute.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/auth/")
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isPresent() && user.get().getPassword().equals(password)) {
-            return ResponseEntity.ok("Login successful");
+        try {
+            String message = userService.login(email, password);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match");
+    public ResponseEntity<String> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword, @RequestParam String phoneNumber) {
+        try {
+            String message = userService.register(name, email, password, confirmPassword, phoneNumber);
+            return ResponseEntity.status(HttpStatus.CREATED).body(message);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        if (existingUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered");
-        }
-        User newUser = new User(null, name, email, password, null);
-        userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<User> getProfile(@RequestParam String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<UserDTO> getProfile(@RequestParam String email) {
+        try {
+            User user = userService.getProfile(email);
+            return ResponseEntity.ok(UserMapper.toDTO(user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PutMapping("/profile/update-password")
     public ResponseEntity<String> updatePassword(@AuthenticationPrincipal User user, @RequestParam String oldPassword, @RequestParam String newPassword) {
-        if (!user.getPassword().equals(oldPassword)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid current password");
+        try {
+            String message = userService.updatePassword(user, oldPassword, newPassword);
+            return ResponseEntity.ok(message);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        user.setPassword(newPassword);
-        userRepository.save(user);
-        return ResponseEntity.ok("Password updated successfully");
     }
 
     @PutMapping("/profile/update-contact")
-    public ResponseEntity<String> updateContact(@AuthenticationPrincipal User user, @RequestParam String contact) {
-        user.setPhoneNumber(contact);
-        userRepository.save(user);
-        return ResponseEntity.ok("Contact updated successfully");
+    public ResponseEntity<String> updateContact(@AuthenticationPrincipal User user, @RequestParam String phoneNumber) {
+        return ResponseEntity.ok(userService.updateContact(user, phoneNumber));
     }
 
     @PutMapping("/profile/update-name")
     public ResponseEntity<String> updateName(@AuthenticationPrincipal User user, @RequestParam String name) {
-        user.setName(name);
-        userRepository.save(user);
-        return ResponseEntity.ok("Name updated successfully");
+        return ResponseEntity.ok(userService.updateName(user, name));
     }
 }
+
