@@ -20,21 +20,18 @@ public class RideMapper {
                 .build();
     }
 
-    public RideDTO toSummaryDTO(Ride ride) {
+    public RideDTO toRideDTO(Ride ride) {
         RideDTO dto = new RideDTO();
         dto.setOrigin(ride.getOrigin());
         dto.setDestination(ride.getDestination());
         dto.setTotalValue(ride.getTotalValue());
-        dto.setDate(ride.getTime().toLocalDate());
-        dto.setDepartureTime(ride.getTime().toLocalTime());
+        dto.setTime(ride.getTime());
+        dto.setOwnerName(ride.getOwner().getName());
+        dto.setTotalCarpoolers(ride.getTotalCarpoolers());
+        dto.setMaxUsers(ride.getMaxUsers());
         return dto;
     }
 
-    public RideDTO toParticipationDTO(Ride ride) {
-        RideDTO dto = toSummaryDTO(ride);
-        dto.setOwnerName(ride.getOwner().getName());
-        dto.setContact(ride.getOwner().getPhoneNumber());
-        dto.setParticipants(ride.getTotalCarpoolers() + "/" + ride.getMaxUsers());
-        return dto;
-    }
+
+
 }
