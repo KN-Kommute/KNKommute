@@ -1,6 +1,8 @@
 package kn.kommute.app.controller;
 
 import kn.kommute.app.dto.RideDTO;
+import kn.kommute.app.mapper.RideMapper;
+import kn.kommute.app.model.Ride;
 import kn.kommute.app.model.User;
 import kn.kommute.app.service.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,27 +19,29 @@ public class RideController {
 
     @Autowired
     private RideService rideService;
+    private RideMapper rideMapper;
+
 
     @PostMapping("/create")
-    public ResponseEntity<String> createRide(@AuthenticationPrincipal User user, @RequestBody RideDTO dto) {
-        rideService.createRide(user, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Ride created successfully");
+    public ResponseEntity<RideDTO> createRide(@AuthenticationPrincipal User user, @RequestBody RideDTO dto) {
+        Ride createdRide = rideService.createRide(user, dto);
+        RideDTO responseDto = rideMapper.toSummaryDTO(createdRide);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+
+
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> listRides() {
+    public ResponseEntity<List<RideDTO>> listRides() {
         return ResponseEntity.ok(rideService.listRides());
     }
 
     @PostMapping("/{rideId}/participate")
     public ResponseEntity<?> participate(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
-        try {
-            Map<String, Object> response = rideService.participate(user, rideId);
-            return ResponseEntity.ok(response);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ride not found");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Maximum number of participants reached");
+        RideDTO response = rideService.participate(user, rideId);
+        if (response == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ride not found or full");
         }
+        return ResponseEntity.ok(response);
     }
 }
