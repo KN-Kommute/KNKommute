@@ -22,12 +22,12 @@ const routes = [
   {
     path: '/dashboard',
     name: 'UserInterface',
-    component: UserInterface // UserInterface para dashboard
+    component: UserInterface
   },
   {
     path: '/rides',
     name: 'Rides',
-    component: Rides // Componente específico para Rides
+    component: Rides
   },
 
 ]
