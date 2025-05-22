@@ -25,7 +25,7 @@ public class RideController {
     @PostMapping("/create")
     public ResponseEntity<RideDTO> createRide(@AuthenticationPrincipal User user, @RequestBody RideDTO dto) {
         Ride createdRide = rideService.createRide(user, dto);
-        RideDTO responseDto = rideMapper.toSummaryDTO(createdRide);
+        RideDTO responseDto = rideMapper.toRideDTO(createdRide);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -37,11 +37,13 @@ public class RideController {
     }
 
     @PostMapping("/{rideId}/participate")
-    public ResponseEntity<?> participate(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
+    public ResponseEntity<RideDTO>  participate(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
         RideDTO response = rideService.participate(user, rideId);
-        if (response == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ride not found or full");
-        }
         return ResponseEntity.ok(response);
+    }
+    @DeleteMapping
+    public void deleteRide(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
+        rideService.deleteById(rideId);
+
     }
 }
