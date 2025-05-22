@@ -1,6 +1,7 @@
 package kn.kommute.app.controller;
 
-import kn.kommute.app.dto.UserDTO;
+import jakarta.validation.Valid;
+import kn.kommute.app.dto.*;
 import kn.kommute.app.mapper.UserMapper;
 import kn.kommute.app.model.User;
 import kn.kommute.app.service.UserService;
@@ -11,7 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth/")
+@RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
@@ -21,9 +22,9 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO request) {
         try {
-            String message = userService.login(email, password);
+            String message = userService.login(request.getEmail(), request.getPassword());
             return ResponseEntity.ok(message);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -31,9 +32,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestParam String name, @RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword, @RequestParam String phoneNumber) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO request) {
         try {
-            String message = userService.register(name, email, password, confirmPassword, phoneNumber);
+            String message = userService.register(request.getName(), request.getEmail(), request.getPassword(), request.getConfirmPassword(), request.getPhoneNumber()
+            );
             return ResponseEntity.status(HttpStatus.CREATED).body(message);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -41,9 +43,12 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<UserDTO> getProfile(@RequestParam String email) {
+    public ResponseEntity<UserDTO> getProfile(@AuthenticationPrincipal User authenticatedUser) {
         try {
-            User user = userService.getProfile(email);
+            if (authenticatedUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            User user = userService.getProfile(authenticatedUser.getEmail());
             return ResponseEntity.ok(userMapper.toDTO(user));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -51,9 +56,10 @@ public class UserController {
     }
 
     @PutMapping("/profile/update-password")
-    public ResponseEntity<String> updatePassword(@AuthenticationPrincipal User user, @RequestParam String oldPassword, @RequestParam String newPassword) {
+    public ResponseEntity<String> updatePassword(@AuthenticationPrincipal User user, @Valid @RequestBody UpdatePasswordDTO request
+    ) {
         try {
-            String message = userService.updatePassword(user, oldPassword, newPassword);
+            String message = userService.updatePassword(user, request.getOldPassword(), request.getNewPassword());
             return ResponseEntity.ok(message);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -61,12 +67,24 @@ public class UserController {
     }
 
     @PutMapping("/profile/update-contact")
-    public ResponseEntity<String> updateContact(@AuthenticationPrincipal User user, @RequestParam String phoneNumber) {
-        return ResponseEntity.ok(userService.updateContact(user, phoneNumber));
+    public ResponseEntity<String> updateContact(@AuthenticationPrincipal User user, @Valid @RequestBody UpdateContactDTO request
+    ) {
+        try {
+            String message = userService.updateContact(user, request.getPhoneNumber());
+            return ResponseEntity.ok(message);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/profile/update-name")
-    public ResponseEntity<String> updateName(@AuthenticationPrincipal User user, @RequestParam String name) {
-        return ResponseEntity.ok(userService.updateName(user, name));
+    public ResponseEntity<String> updateName(@AuthenticationPrincipal User user, @Valid @RequestBody UpdateNameDTO request
+    ) {
+        try {
+            String message = userService.updateName(user, request.getName());
+            return ResponseEntity.ok(message);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
