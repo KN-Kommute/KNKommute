@@ -11,56 +11,149 @@
 
       <nav class="nav">
         <button class="nav-item" @click="goToRides">Rides</button>
-      <button class="nav-item active">Profile</button>
-    </nav>
+        <button class="nav-item active">Profile</button>
+      </nav>
 
-    <button class="logout-btn" @click="handleLogout">Logout</button>
-</aside>
+      <button class="logout-btn" @click="handleLogout">Logout</button>
+    </aside>
 
-        <!-- Main Content -->
-<main class="content">
-<div class="profile-section">
-  <!-- Car + Anchor -->
-  <div class="header-icon">
-    <img src="@/assets/Vector.png" alt="Car Icon" class="top-car-icon" />
-    <img src="@/assets/image 1.png" alt="Anchor Icon" class="anchor-icon" />
-  </div>
-
-  <!-- Title Only (no create button) -->
-  <div class="header-row">
-    <h2 class="profile-title">Profile</h2>
-  </div>
-
-  <hr class="divider" />
-
-  <!-- Profile Form -->
-  <form class="profile-form">
-    <input type="email" placeholder="Email" />
-    <input type="text" placeholder="Mobile Number" />
-    <input type="password" placeholder="New password" />
-    <input type="password" placeholder="Repeat new password" />
-    <button type="submit" class="save-btn">Save profile</button>
-  </form>
-</div>
-</main>
+    <!-- Main Content -->
+    <main class="content">
+      <div class="profile-section">
+        <!-- Car + Anchor -->
+        <div class="header-icon">
+          <img src="@/assets/Vector.png" alt="Car Icon" class="top-car-icon" />
+          <img src="@/assets/image 1.png" alt="Anchor Icon" class="anchor-icon" />
         </div>
-        </template>
+
+        <div class="header-row">
+          <h2 class="profile-title">Profile</h2>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Profile Form -->
+        <form class="profile-form" @submit.prevent="saveProfile">
+          <input type="email" v-model="email" placeholder="Email" disabled />
+          <input type="text" v-model="phoneNumber" placeholder="Mobile Number" />
+          <input type="password" v-model="oldPassword" placeholder="Current password" />
+          <input type="password" v-model="newPassword" placeholder="New password" />
+          <input type="password" v-model="repeatPassword" placeholder="Repeat new password" />
+          <button type="submit" class="save-btn">Save profile</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const email = ref('')
+const phoneNumber = ref('')
+const oldPassword = ref('')
+const newPassword = ref('')
+const repeatPassword = ref('')
+
+const token = localStorage.getItem('token') || ''
+
+async function fetchProfile() {
+  try {
+    if (!token) {
+      console.error('No token found.')
+      return
+    }
+
+    const response = await fetch('/api/auth/profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Failed to fetch profile:', response.status, errorText)
+      alert('Erro ao carregar perfil.')
+      return
+    }
+
+    const data = await response.json()
+    email.value = data.email
+    phoneNumber.value = data.phoneNumber
+  } catch (err) {
+    console.error('Erro ao carregar perfil:', err)
+    alert('Erro inesperado ao carregar o perfil.')
+  }
+}
+
+async function saveProfile() {
+  try {
+    // Atualiza o contacto
+    const contactRes = await fetch('/api/auth/profile/update-contact', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ phoneNumber: phoneNumber.value }),
+    })
+
+    if (!contactRes.ok) {
+      const errText = await contactRes.text()
+      throw new Error(`Falha ao atualizar contacto: ${errText}`)
+    }
+
+    // Atualiza a password, se preenchida
+    if (newPassword.value || repeatPassword.value || oldPassword.value) {
+      if (newPassword.value !== repeatPassword.value) {
+        alert('As novas passwords não coincidem.')
+        return
+      }
+
+      const passwordRes = await fetch('/api/auth/profile/update-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          oldPassword: oldPassword.value,
+          newPassword: newPassword.value,
+        }),
+      })
+
+      if (!passwordRes.ok) {
+        const errText = await passwordRes.text()
+        throw new Error(`Falha ao atualizar password: ${errText}`)
+      }
+    }
+
+    alert('Perfil atualizado com sucesso!')
+  } catch (err: any) {
+    console.error(err)
+    alert(`Erro ao atualizar perfil: ${err.message || 'Erro inesperado'}`)
+  }
+}
+
 function handleLogout() {
+  localStorage.removeItem('token')
   router.push('/login')
 }
 
 function goToRides() {
   router.push('/rides')
 }
+
+onMounted(() => {
+  fetchProfile()
+})
 </script>
 
 <style scoped>
+/* MESMO STYLE QUE TINHAS */
 .dashboard {
   display: flex;
   height: 100vh;
@@ -68,7 +161,6 @@ function goToRides() {
   font-size: 18px;
 }
 
-/* Sidebar */
 .sidebar {
   width: 400px;
   background-color: #002f6c;
@@ -99,11 +191,6 @@ function goToRides() {
 .welcome {
   font-size: 16px;
   opacity: 0.9;
-}
-
-.username {
-  font-weight: 600;
-  font-size: 18px;
 }
 
 .nav {
@@ -141,14 +228,13 @@ function goToRides() {
   margin-top: auto;
 }
 
-/* Main Content */
 .content {
   flex: 1;
   padding: 40px 60px;
 }
 
 .profile-section {
-  max-width: 600px;
+  max-width: 100vh;
   margin: 0 auto;
   padding-top: 30px;
 }

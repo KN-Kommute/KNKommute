@@ -27,5 +27,13 @@ public class User {
     private String password;
 
     @Column(name = "phone_number", unique = true, nullable = false, length = 20)
+
     private String phoneNumber;
+    public User(String name, String email, String password, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
 }
+

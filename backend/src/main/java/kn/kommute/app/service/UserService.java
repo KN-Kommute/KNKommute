@@ -2,54 +2,59 @@ package kn.kommute.app.service;
 
 import kn.kommute.app.model.User;
 import kn.kommute.app.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public Optional<User> findUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    public Optional<User> findUserByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public void register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
-    public User updateUser(Long id, User updatedUser) {
-        Optional<User> existingUser = userRepository.findById(id);
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setName(updatedUser.getName());
-            user.setEmail(updatedUser.getEmail());
-            user.setPassword(updatedUser.getPassword());
-            user.setPhoneNumber(updatedUser.getPhoneNumber());
-            return userRepository.save(user);
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email ou palavra-passe inválidos"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Email ou palavra-passe inválidos");
         }
-        return null;
+
+        return user;
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public String updatePassword(User user, String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Palavra-passe atual incorreta.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "Palavra-passe atualizada com sucesso.";
+    }
+
+    public String updateContact(User user, String phoneNumber) {
+        user.setPhoneNumber(phoneNumber);
+        userRepository.save(user);
+        return "Contacto atualizado com sucesso.";
+    }
+
+    public String updateName(User user, String newName) {
+        user.setName(newName);
+        userRepository.save(user);
+        return "Nome atualizado com sucesso.";
     }
 }
