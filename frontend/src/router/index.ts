@@ -3,6 +3,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import UserInterface from '@/views/UserInterface.vue'
 import Rides from '@/views/Rides.vue'
+import ElementPlus from 'element-plus'
 
 const routes = [
   {

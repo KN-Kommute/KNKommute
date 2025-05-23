@@ -1,37 +1,67 @@
 <template>
-    <div class="PageWithSidebar">
-        <Sidebar />
+<div class="PageWithSidebar">
+<Sidebar />
 
-        <main class="PageWithSidebar__content">
-            <div class="PageWithSidebar__section">
-                <Logo />
+    <main class="PageWithSidebar__content">
+<div class="PageWithSidebar__section">
+<Logo />
 
-                <div class="PageWithSidebar__header-row">
-                    <h2 class="PageWithSidebar__title">Rides</h2>
-                    <button class="PageWithSidebar__create-btn">Create</button>
-                </div>
+        <div class="PageWithSidebar__header-row">
+<h2 class="PageWithSidebar__title">Rides</h2>
+<button class="PageWithSidebar__create-btn" @click="showModal = true">Create</button>
+<CreateRide v-model="showModal" @create="handleCreateRide" />
+</div>
 
-                <hr class="PageWithSidebar__divider" />
+        <hr class="PageWithSidebar__divider" />
 
-                <div class="PageWithSidebar__empty-rides">
-                    <img src="@/assets/car_repair.png" alt="No Rides" class="PageWithSidebar__no-rides-image" />
-                    <p class="PageWithSidebar__no-rides-text">You don’t have any rides yet.</p>
-                </div>
-            </div>
-        </main>
-    </div>
+        <component
+          v-if="hasRides"
+          :is="TableRide"
+        />
+
+        <div v-else class="PageWithSidebar__empty-rides">
+<img
+            src="@/assets/car_repair.png"
+            alt="No Rides"
+            class="PageWithSidebar__no-rides-image"
+          />
+<p class="PageWithSidebar__no-rides-text">You don’t have any rides yet.</p>
+</div>
+</div>
+</main>
+</div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, defineAsyncComponent } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import Logo from '@/components/Logo.vue'
+import CreateRide from '@/components/CreateRide.vue' // IMPORTAÇÃO AQUI
+
+const rides = ref([
+  // Simule dados reais se quiser
+ { }
+])
+
+const hasRides = computed(() => rides.value.length > 0)
+const TableRide = defineAsyncComponent(() => import('@/components/TableRide.vue'))
+
+// Controle do modal
+const showModal = ref(false)
+
+// Handler da criação
+function handleCreateRide(ride: any) {
+  rides.value.push(ride)
+  console.log('Nova carona criada:', ride)
+}
 </script>
 
-<style lang="scss">
+
+<style scoped lang="scss">
 @import '@/components/style-common.scss';
 
 .PageWithSidebar {
-  height: 100vh;
+  height: 800px;
   overflow-y: hidden;
 
   &__create-btn {
@@ -47,7 +77,7 @@ import Logo from '@/components/Logo.vue'
 
   &__empty-rides {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 40px;
   }
 
   &__no-rides-image {
