@@ -1,16 +1,16 @@
 <template>
-  <div class="PageWithSidebar">
+  <div class="PageLayout">
     <Sidebar />
 
-    <main class="PageWithSidebar__content">
-      <div class="PageWithSidebar__section">
+    <main class="PageLayout__content">
+      <div class="PageLayout__section">
         <Logo />
 
-        <div class="PageWithSidebar__header-row">
-          <h2 class="PageWithSidebar__title">Profile</h2>
+        <div class="PageLayout__header-row">
+          <h2 class="PageLayout__title">Profile</h2>
         </div>
 
-        <hr class="PageWithSidebar__divider" />
+        <hr class="Profile__divider" />
 
         <form class="__form">
           <input type="email" placeholder="Email" />
@@ -25,14 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import Sidebar from '@/components/Sidebar.vue'
-import Logo from '@/components/Logo.vue'
+import Sidebar from '../components/Sidebar.vue'
+import Logo from '../components/KnLogo.vue'
 </script>
 
 <style lang="scss">
 @import '@/components/style-common.scss';
 
-.PageWithSidebar {
+.PageLayout {
   height: 100vh;
   overflow-y: hidden;
 

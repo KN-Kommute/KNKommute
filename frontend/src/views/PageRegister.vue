@@ -1,62 +1,55 @@
 <template>
-    <AuthLayout>
+  <AuthLayout>
     <template #welcome-text>
-    <p class="register__welcome-text">Insert your data below</p>
-</template>
+      <p class="register__welcome-text">Insert your data below</p>
+    </template>
 
-<form class="register__form" @submit.prevent="handleRegister">
-<div class="register__form-group">
-<input
-        :class="{ 'register__input--error': nameError }"
-        type="text"
-        placeholder="Name"
-        v-model="name"
-        required
-        class="register__input"
-/>
-<span v-if="nameError" class="register__error-msg">{{ nameError }}</span>
-</div>
+    <form class="register__form" @submit.prevent="handleRegister">
+      <div class="register__form-group">
+        <input
+          :class="{ 'register__input--error': nameError }"
+          type="text"
+          placeholder="Name"
+          v-model="name"
+          required
+          class="register__input"
+        />
+        <span v-if="nameError" class="register__error-msg">{{ nameError }}</span>
+      </div>
 
-<input
-type="email"
-placeholder="Email"
-v-model="email"
-required
-class="register__input"
-/>
+      <input type="email" placeholder="Email" v-model="email" required class="register__input" />
 
-<input
-type="password"
-placeholder="Password"
-v-model="password"
-required
-class="register__input"
-/>
-
-<div class="register__form-group">
-<input
-        :class="{ 'register__input--error': passwordError }"
+      <input
         type="password"
-        placeholder="Repeat Password"
-        v-model="repeatPassword"
+        placeholder="Password"
+        v-model="password"
         required
         class="register__input"
-/>
-<span v-if="passwordError" class="register__error-msg">{{ passwordError }}</span>
-</div>
+      />
 
-<div class="register__buttons">
-<button type="submit" class="btn btn--primary">Create account</button>
-<button type="button" class="btn btn--secondary" @click="goBack">Go back</button>
-        </div>
-        </form>
-        </AuthLayout>
-        </template>
+      <div class="register__form-group">
+        <input
+          :class="{ 'register__input--error': passwordError }"
+          type="password"
+          placeholder="Repeat Password"
+          v-model="repeatPassword"
+          required
+          class="register__input"
+        />
+        <span v-if="passwordError" class="register__error-msg">{{ passwordError }}</span>
+      </div>
+
+      <div class="register__buttons">
+        <button type="submit" class="btn btn--primary">Create account</button>
+        <button type="button" class="btn btn--secondary" @click="goBack">Go back</button>
+      </div>
+    </form>
+  </AuthLayout>
+</template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
 
 const router = useRouter()
 const email = ref('')
@@ -73,7 +66,7 @@ function handleRegister() {
 
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
   const trimmedName = name.value.trim()
-  const nameParts = trimmedName.split(/\s+/).filter(part => part.length >= 2)
+  const nameParts = trimmedName.split(/\s+/).filter((part) => part.length >= 2)
 
   if (nameParts.length < 2) {
     nameError.value = 'Please enter your full name (at least two words with 2+ letters).'
@@ -148,7 +141,9 @@ function goBack() {
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   width: 107%;
   text-align: center;
 
