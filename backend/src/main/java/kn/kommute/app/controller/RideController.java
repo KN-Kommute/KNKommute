@@ -43,7 +43,11 @@ public class RideController {
     }
 
     @DeleteMapping("/{rideId}")
-    public void deleteRide(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
+    public ResponseEntity deleteRide(@AuthenticationPrincipal User user, @PathVariable Long rideId) {
         rideService.deleteById(rideId);
+        return ResponseEntity.noContent().build();
     }
+
+
+
 }
