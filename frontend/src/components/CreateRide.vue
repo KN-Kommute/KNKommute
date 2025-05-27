@@ -12,19 +12,19 @@
 
     <el-form label-position="top" class="form-styled">
       <el-form-item label="Origin">
-        <el-input
-          v-model="origin"
-          placeholder="Origin"
-          class="input-styled"
-        />
+        <el-input v-model="origin" placeholder="Origin" class="input-styled">
+          <template #prefix>
+            <Location style="color: #002f6c; font-size: 18px;" />
+          </template>
+        </el-input>
       </el-form-item>
 
       <el-form-item label="Destination">
-        <el-input
-          v-model="destination"
-          placeholder="Destination"
-          class="input-styled"
-        />
+        <el-input v-model="destination" placeholder="Destination" class="input-styled">
+          <template #prefix>
+            <Location style="color: #002f6c; font-size: 18px;" />
+          </template>
+        </el-input>
       </el-form-item>
 
       <el-form-item label="Date and time of departure">
@@ -42,7 +42,11 @@
           type="number"
           placeholder="Total cost of trip"
           class="input-styled"
-        />
+        >
+          <template #prefix>
+            <Money style="color: #002f6c; font-size: 18px;" />
+          </template>
+        </el-input>
       </el-form-item>
     </el-form>
 
@@ -57,6 +61,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { Location, Money } from '@element-plus/icons-vue'
+
 
 const props = defineProps<{ modelValue: boolean }>()
 const emit = defineEmits(['update:modelValue', 'create'])
@@ -92,7 +98,7 @@ function createRide() {
 </script>
 
 <style scoped>
-.custom-dialog >>> .el-dialog {
+.custom-dialog .el-dialog {
   position: absolute;
   left: 100%;
   top: 15vh;
@@ -101,7 +107,7 @@ function createRide() {
   width: 100%;
 }
 
-.custom-dialog >>> .el-dialog__header {
+.custom-dialog  .el-dialog__header {
   padding-bottom: 0;
 }
 
@@ -112,7 +118,7 @@ function createRide() {
   margin: 0;
 }
 
-.input-styled >>> .el-input__inner {
+.input-styled  .el-input__inner {
   border-radius: 4px;
   padding: 10px;
 }

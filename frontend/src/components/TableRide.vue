@@ -50,10 +50,10 @@
         <p><strong>Total value:</strong> {{ selectedRide.value }}</p>
         <p><strong>Total participants of this ride:</strong> 5</p>
 
-        <el-form-item label="Pickup address">
+        <el-form-item >
           <el-input
             v-model="pickupAddress"
-            placeholder="Enter your pickup location"
+            placeholder="Place of pick-up"
             clearable
           />
         </el-form-item>
@@ -106,26 +106,43 @@
       </div>
     </el-dialog>
 
-    <!-- Modal de Detalhes -->
-    <el-dialog
-      v-model="showDetailsModal"
-      title="Ride Details"
-      width="400px"
-      center
-    >
-      <div class="modal-content">
-        <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-        <p><strong>Contact:</strong> +351 999 999 999</p>
-        <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
-        <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
-        <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
-        <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
-        <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
-        <div class="modal-footer">
-          <el-button @click="showDetailsModal = false">Close</el-button>
-        </div>
-      </div>
-    </el-dialog>
+
+<!-- Modal de Detalhes -->
+<el-dialog
+  v-model="showDetailsModal"
+  width="400px"
+  :show-close="true"
+  center
+>
+  <div class="modal-content">
+    <h2 class="modal-title">{{ selectedDetailsRide.owner }} Ride</h2>
+    <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
+    <p><strong>Contact:</strong> +351 999 999 999</p>
+    <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
+    <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
+    <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
+    <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
+    <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
+    <p><strong>Total participants of this ride:</strong> 5</p>
+
+<p style="margin-top: 35px; font-size: 16px; font-weight: 600; color: #1f2d3d;">
+  <strong>Pick-ups</strong>
+</p>
+<ul style="list-style: none; padding-left: 0; margin-top: 8px;">
+  <li v-for="(address, index) in selectedDetailsRide.pickups" :key="index" style="margin-bottom: 4px;">
+    {{ address }}
+  </li>
+</ul>
+
+
+
+    <div class="modal-footer">
+      <el-button @click="showDetailsModal = false">Close</el-button>
+    </div>
+  </div>
+</el-dialog>
+
+
   </div>
 </template>
 
@@ -140,9 +157,13 @@ const tableData = ref([
     to: 'Porto',
     time: '11:00',
     value: '30€',
+    pickups: ['Address 1', 'Address 2', 'Address 3'],
     participating: false
   }
 ])
+
+
+
 
 const pickupAddress = ref('')
 const showModal = ref(false)
@@ -202,6 +223,7 @@ const getRowClass = ({ row }) => {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   width: 90%;
   margin: 0 auto;
+  overflow-x: hidden !;
 }
 
 .custom-header {

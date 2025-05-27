@@ -58,7 +58,7 @@ function goToRides() {
   background-color: #002f6c;
   color: white;
   position: relative;
-  height: 95vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
