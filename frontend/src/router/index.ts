@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/Login.vue'
-import Register from '@/views/Register.vue'
-import UserInterface from '@/views/UserInterface.vue'
-import Rides from '@/views/Rides.vue'
+import Login from '../views/PageLogin.vue'
+import Register from '../views/PageRegister.vue'
+import UserInterface from '../views/UserInterface.vue'
+import Rides from '../views/PageRides.vue'
+import ElementPlus from 'element-plus'
 
 const routes = [
   {

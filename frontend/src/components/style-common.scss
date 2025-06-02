@@ -1,54 +1,65 @@
-    .PageWithSidebar {
-      display: flex;
-      min-height: 100vh;
+.PageLayout {
+  display: flex;
+  min-height: 100vh;
 
-      &__content {
-        flex: 1;
-        padding: 40px 60px;
-        display: flex;
-        justify-content: center;
-      }
+  &__content {
+    flex: 1;
+    padding: 40px 60px;
+    display: flex;
+    justify-content: center;
+  }
 
-      &__section {
-        max-width: 800px;
-        width: 100%;
-        padding-top: 30px;
-      }
+  &__section {
+    max-width: 150vh;
+    width: 100%;
+    padding-top: 30px;
+  }
 
-      &__header-icon {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
+  &__header-icon {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
 
-      &__car-icon {
-        width: 100px;
-      }
+  &__car-icon {
+    width: 100px;
+  }
 
-      &__anchor-icon {
-        position: absolute;
-        top: -27px;
-        width: 30px;
-      }
+  &__anchor-icon {
+    position: absolute;
+    top: -27px;
+    width: 30px;
+  }
 
-      &__header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-      }
+  &__header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
 
-      &__title {
-        color: #002f6c;
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-      }
+  &__title {
+    color: #002f6c;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
 
-      &__divider {
-        border: none;
-        border-top: 1px solid #002f6c;
-        margin-bottom: 32px;
-      }
-    }
+  &__divider {
+    border: none;
+    border-top: 1px solid #002f6c;
+    margin-bottom: 32px;
+  }
+  ::v-deep(.el-table) {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #003369;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    width: 90%;
+    margin: 0 auto;
+  }
+}

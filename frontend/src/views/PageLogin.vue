@@ -1,30 +1,32 @@
 <template>
-    <AuthLayout>
+  <AuthLayout>
     <template #welcome-text>
-    <p class="login__welcome">Welcome!</p>
+      <p class="login__welcome">Welcome!</p>
+    </template>
+
+    <form class="login__form" @submit.prevent="handleLogin">
+      <div class="login__form-group">
+        <input id="email" type="email" v-model="email" placeholder="Email" required />
+      </div>
+
+      <div class="login__form-group">
+        <input id="password" type="password" v-model="password" placeholder="Password" required />
+      </div>
+
+      <div v-if="errorMessage" class="login__error">{{ errorMessage }}</div>
+
+      <button type="submit" class="login__btn login__btn--primary">Login</button>
+      <button type="button" class="login__btn login__btn--secondary" @click="goToRegister">
+        Register
+      </button>
+    </form>
+  </AuthLayout>
 </template>
-
-<form class="login__form" @submit.prevent="handleLogin">
-<div class="login__form-group">
-<input id="email" type="email" v-model="email" placeholder="Email" required />
-</div>
-
-<div class="login__form-group">
-<input id="password" type="password" v-model="password" placeholder="Password" required />
-</div>
-
-<div v-if="errorMessage" class="login__error">{{ errorMessage }}</div>
-
-<button type="submit" class="login__btn login__btn--primary">Login</button>
-<button type="button" class="login__btn login__btn--secondary" @click="goToRegister">Register</button>
-        </form>
-        </AuthLayout>
-        </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthLayout from '@/components/AuthLayout.vue'
+import AuthLayout from '../components/AuthLayout.vue'
 
 const email = ref('')
 const password = ref('')
@@ -35,7 +37,7 @@ const router = useRouter()
 const login = (emailInput: string, passwordInput: string) => {
   const validUser = {
     email: 'teste@exemplo.com',
-    password: '123456'
+    password: '123456',
   }
   return emailInput === validUser.email && passwordInput === validUser.password
 }
@@ -86,7 +88,9 @@ function goToRegister() {
   padding: 12px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   border-radius: 4px;
   width: 100%;
 
