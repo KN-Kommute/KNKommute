@@ -22,14 +22,15 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginDTO request) {
         try {
-            String message = userService.login(request.getEmail(), request.getPassword());
-            return ResponseEntity.ok(message);
+            AuthResponseDTO response = userService.login(request.getEmail(), request.getPassword());
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO request) {

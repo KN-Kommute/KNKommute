@@ -1,5 +1,7 @@
 package kn.kommute.app.service;
 
+import kn.kommute.app.dto.AuthResponseDTO;
+import kn.kommute.app.dto.UserDTO;
 import kn.kommute.app.model.User;
 import kn.kommute.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,28 +9,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
-    // Faz login: valida email e password
-    public String login(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+    public AuthResponseDTO login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Email ou senha inválidos");
         }
-        return "Login successful";
+
+        String token = jwtService.generateToken(user);
+
+        UserDTO userDTO = new UserDTO(user.getName(), user.getEmail(), user.getPhoneNumber());
+
+        return new AuthResponseDTO(userDTO, token);
     }
 
     // Regista novo user, com validações

@@ -24,45 +24,51 @@
 
 <script setup lang="ts">
  import { ref } from 'vue'
- import { useRouter } from 'vue-router'
- import axios from 'axios'
- import AuthLayout from '../components/AuthLayout.vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
+import AuthLayout from '../components/AuthLayout.vue'
 
- const email = ref('')
- const password = ref('')
- const errorMessage = ref('')
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+const router = useRouter()
+const authStore = useAuthStore()
 
- const router = useRouter()
+async function handleLogin() {
+  errorMessage.value = ''
 
- async function handleLogin() {
-   errorMessage.value = ''
+  try {
+    const response = await axios.post('http://localhost:8912/api/auth/login', {
+      email: email.value,
+      password: password.value
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
 
-   try {
-     const response = await axios.post('http://localhost:8912/api/auth/login', {
-       email: email.value,
-       password: password.value
-     }, {
-       withCredentials: true,
-       headers: {
-         'Content-Type': 'application/json'
-       }
-     })
+    const { user, token } = response.data
 
-     alert('Login feito com sucesso!')
-     console.log('Login OK:', response.data)
-     router.push('/dashboard')
-   } catch (error: any) {
-     if (error.response && error.response.status === 401) {
-       errorMessage.value = 'Credenciais inválidas.'
-     } else {
-       errorMessage.value = 'Erro ao conectar. Tente novamente.'
-     }
-   }
- }
+    authStore.setAuth(user, token)
+    console.log(response.data) 
 
- function goToRegister() {
-   router.push('/register')
- }
+    alert('Login feito com sucesso!')
+    router.push('/dashboard')
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      errorMessage.value = 'Credenciais inválidas.'
+    } else {
+      errorMessage.value = 'Erro ao conectar. Tente novamente.'
+    }
+  }
+}
+
+function goToRegister() {
+  router.push('/register')
+}
+
  </script>
 <style lang="scss">
 .login__welcome {
