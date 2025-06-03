@@ -34,7 +34,7 @@ public class UserService {
 
         String token = jwtService.generateToken(user);
 
-        UserDTO userDTO = new UserDTO(user.getName(), user.getEmail(), user.getPhoneNumber());
+        UserDTO userDTO = new UserDTO(Math.toIntExact(user.getId()), user.getName(), user.getEmail(), user.getPhoneNumber());
 
         return new AuthResponseDTO(userDTO, token);
     }
