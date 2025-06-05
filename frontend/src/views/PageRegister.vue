@@ -5,6 +5,7 @@
     </template>
 
     <form class="register__form" @submit.prevent="handleRegister">
+      <!-- Name -->
       <div class="register__form-group">
         <input
           :class="{ 'register__input--error': nameError }"
@@ -17,8 +18,25 @@
         <span v-if="nameError" class="register__error-msg">{{ nameError }}</span>
       </div>
 
-      <input type="email" placeholder="Email" v-model="email" required class="register__input" />
+      <!-- Email -->
+      <input
+        type="email"
+        placeholder="Email"
+        v-model="email"
+        required
+        class="register__input"
+      />
 
+      <!-- Phone Number -->
+      <input
+        type="tel"
+        placeholder="Phone Number"
+        v-model="phoneNumber"
+        required
+        class="register__input"
+      />
+
+      <!-- Password -->
       <input
         type="password"
         placeholder="Password"
@@ -27,6 +45,7 @@
         class="register__input"
       />
 
+      <!-- Repeat Password -->
       <div class="register__form-group">
         <input
           :class="{ 'register__input--error': passwordError }"
@@ -39,6 +58,10 @@
         <span v-if="passwordError" class="register__error-msg">{{ passwordError }}</span>
       </div>
 
+      <!-- API error -->
+      <p v-if="apiError" class="register__error-msg">{{ apiError }}</p>
+
+      <!-- Buttons -->
       <div class="register__buttons">
         <button type="submit" class="btn btn--primary">Create account</button>
         <button type="button" class="btn btn--secondary" @click="goBack">Go back</button>
@@ -47,40 +70,68 @@
   </AuthLayout>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from 'vue'
+import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
 const email = ref('')
 const password = ref('')
 const repeatPassword = ref('')
 const name = ref('')
+const phoneNumber = ref('') // Adicione se for obrigatório no backend
 
 const nameError = ref('')
 const passwordError = ref('')
+const apiError = ref('') // para erros do backend
 
-function handleRegister() {
+async function handleRegister() {
   nameError.value = ''
   passwordError.value = ''
+  apiError.value = ''
 
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
   const trimmedName = name.value.trim()
-  const nameParts = trimmedName.split(/\s+/).filter((part) => part.length >= 2)
+  const nameParts = trimmedName.split(/\s+/).filter(part => part.length >= 2)
 
   if (nameParts.length < 2) {
     nameError.value = 'Please enter your full name (at least two words with 2+ letters).'
+    return
   } else if (!nameRegex.test(trimmedName)) {
     nameError.value = 'Name can only contain letters and spaces.'
+    return
   }
 
   if (password.value !== repeatPassword.value) {
     passwordError.value = 'Passwords do not match.'
+    return
   }
 
-  if (!nameError.value && !passwordError.value) {
-    alert('Account created successfully!')
+  try {
+    await axios.post('http://localhost:8912/api/auth/register', {
+      name: trimmedName,
+      email: email.value,
+      password: password.value,
+      confirmPassword: repeatPassword.value,
+      phoneNumber: phoneNumber.value || '000000000'
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    alert('Conta criada com sucesso!')
     router.push('/login')
+  } catch (error: any) {
+    if (error.response) {
+      apiError.value = error.response.data || 'Erro ao registrar.'
+    } else {
+      apiError.value = 'Erro de rede. Verifique o backend.'
+    }
   }
 }
 
@@ -141,9 +192,7 @@ function goBack() {
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
   width: 107%;
   text-align: center;
 
