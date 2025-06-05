@@ -13,6 +13,5 @@ public class RideDTO {
     private LocalDateTime time;
     private Float totalValue;
     private int maxUsers;
-    private String ownerName;
     private int totalCarpoolers;
 }

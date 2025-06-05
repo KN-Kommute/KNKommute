@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "rides")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,10 +22,10 @@ public class Ride {
     @Column(nullable = false, length = 255)
     private String destination;
 
-    @Column(nullable = false )
+    @Column(nullable = false)
     private LocalDateTime time;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_owner_id", nullable = false)
     private User owner;
 
