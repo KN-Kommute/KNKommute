@@ -5,6 +5,7 @@ import kn.kommute.app.mapper.RideMapper;
 import kn.kommute.app.model.Ride;
 import kn.kommute.app.model.User;
 import kn.kommute.app.repository.RideRepository;
+import kn.kommute.app.repository.UserRepository;
 import kn.kommute.app.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,13 +27,21 @@ public class RideService {
     private final RideMapper rideMapper;
 
     @Autowired
+    private UserRepository userRepository;
+
+
+    @Autowired
     public RideService(RideRepository rideRepository, RideMapper rideMapper) {
         this.rideRepository = rideRepository;
         this.rideMapper = rideMapper;
     }
 
-    public Ride createRide(User user, RideDTO dto) {
-        Ride ride = rideMapper.toRide(dto, user);
+    public Ride createRide(Ride ride, Long userId) {
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        ride.setOwner(owner);
         return rideRepository.save(ride);
     }
 
