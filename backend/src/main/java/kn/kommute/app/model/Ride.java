@@ -25,7 +25,7 @@ public class Ride {
     private LocalDateTime time;
 
     @ManyToOne
-    @JoinColumn(name = "user_owner_id", nullable = false) // Chave estrangeira para User.id
+    @JoinColumn(name = "user_owner_id", nullable = false)
     private User owner;
 
     private Float totalValue;

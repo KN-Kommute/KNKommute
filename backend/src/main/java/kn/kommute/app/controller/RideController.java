@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rides")
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
 public class RideController {
 
     private final RideService rideService;
@@ -24,12 +25,13 @@ public class RideController {
         this.rideMapper = rideMapper;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<RideDTO> createRide(@AuthenticationPrincipal User user, @RequestBody RideDTO dto) {
         Ride createdRide = rideService.createRide(user, dto);
         RideDTO responseDto = rideMapper.toRideDTO(createdRide);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
+
 
     @GetMapping
     public ResponseEntity<List<RideDTO>> listRides() {
