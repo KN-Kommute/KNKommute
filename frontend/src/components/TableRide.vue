@@ -1,8 +1,7 @@
 <template>
   <div class="p-8">
-    <!-- Tabela de Viagens -->
     <el-table
-      :data="tableData"
+      :data="rides"
       style="width: 100%; border: none"
       :row-class-name="getRowClass"
       header-cell-class-name="custom-header"
@@ -37,7 +36,7 @@
       <div class="modal-content">
         <h2 class="modal-title">{{ selectedRide.owner }} Ride</h2>
         <p><strong>Owner:</strong> {{ selectedRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedRide.phone }}</p>
+        <p><strong>Contact:</strong> {{ selectedRide.ownerPhone }}</p>
         <p><strong>Date:</strong> {{ selectedRide.date }}</p>
         <p><strong>From:</strong> {{ selectedRide.from }}</p>
         <p><strong>To:</strong> {{ selectedRide.to }}</p>
@@ -89,13 +88,13 @@
     <!-- Modal de Detalhes -->
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
-        <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedDetailsRide.phone }}</p>
-        <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
-        <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
-        <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
-        <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
-        <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
+    <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
+    <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
+    <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
+    <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
+    <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
+    <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
+    <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
         <div class="modal-footer">
           <el-button @click="showDetailsModal = false">Close</el-button>
         </div>
@@ -104,21 +103,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
+import { Ride } from '../types/KNRidesTypes'
 
-const tableData = ref([
-  {
-    owner: 'Cláudio Souza',
-    phone: '933311515',
-    date: '13/10/2025',
-    from: 'Ericeira',
-    to: 'Porto',
-    time: '11:00',
-    value: '30€',
-    participating: false,
+defineProps({
+  rides: {
+    type: Array as PropType<Ride[]>,
+    required: true,
   },
-])
+})
 
 const pickupAddress = ref('')
 const showModal = ref(false)
@@ -159,6 +154,7 @@ const showRideDetails = (ride) => {
   selectedDetailsRide.value = ride
   showDetailsModal.value = true
 }
+
 
 const getRowClass = ({ row }) => {
   return row.participating ? 'participating-row' : ''
