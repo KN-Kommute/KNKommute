@@ -54,6 +54,7 @@ public class RideService {
             dto.setMaxUsers(ride.getMaxUsers());
             dto.setTotalCarpoolers(ride.getTotalCarpoolers());
             dto.setOwnerName(ride.getOwner().getName());
+            dto.setPhoneNumber(ride.getOwner().getPhoneNumber());
 
             return dto;
         }).toList();

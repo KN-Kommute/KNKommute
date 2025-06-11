@@ -51,7 +51,7 @@ async function handleCreateRide(rideData: any) {
       value: `${response.data.totalValue}€`,
       participating: false,
       owner: response.data.ownerName,
-      phone: response.data.ownerContact,
+      phone: response.data.ownerPhone,
     })
     showModal.value = false
   } catch (error) {
@@ -65,7 +65,7 @@ async function fetchRides() {
     rides.value = response.data.map((r: any) => ({
       id: r.id,
       owner: r.ownerName,
-      phone: r.ownerContact,
+      phone: r.phoneNumber,
       date: new Date(r.time).toLocaleDateString('pt-PT'),
       from: r.origin,
       to: r.destination,

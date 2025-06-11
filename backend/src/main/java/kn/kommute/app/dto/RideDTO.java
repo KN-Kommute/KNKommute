@@ -15,4 +15,5 @@ public class RideDTO {
     private int maxUsers;
     private int totalCarpoolers;
     private String ownerName;
+    private String phoneNumber;
 }
