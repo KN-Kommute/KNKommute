@@ -2,9 +2,8 @@ import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8912/api', // baseURL do teu backend
+  baseURL: 'http://localhost:8912/',
 })
-
 api.interceptors.request.use(config => {
   const authStore = useAuthStore()
   if (authStore.token) {
