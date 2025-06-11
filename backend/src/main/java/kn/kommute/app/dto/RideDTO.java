@@ -14,4 +14,5 @@ public class RideDTO {
     private Float totalValue;
     private int maxUsers;
     private int totalCarpoolers;
+    private String ownerName;
 }
