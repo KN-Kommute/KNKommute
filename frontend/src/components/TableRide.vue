@@ -1,8 +1,7 @@
 <template>
   <div class="p-8">
-    <!-- Tabela de Viagens -->
     <el-table
-      :data="tableData"
+      :data="rides"
       style="width: 100%; border: none"
       :row-class-name="getRowClass"
       header-cell-class-name="custom-header"
@@ -104,21 +103,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
-const tableData = ref([
-  {
-    owner: 'Cláudio Souza',
-    phone: '933311515',
-    date: '13/10/2025',
-    from: 'Ericeira',
-    to: 'Porto',
-    time: '11:00',
-    value: '30€',
-    participating: false,
-  },
-])
+defineProps<{
+  rides: {
+    owner: string
+    phone: string
+    date: string
+    from: string
+    to: string
+    time: string
+    value: string
+    participating: boolean
+  }[]
+}>()
 
 const pickupAddress = ref('')
 const showModal = ref(false)

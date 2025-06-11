@@ -45,6 +45,15 @@
           class="input-styled modal__input"
         />
       </el-form-item>
+      <el-form-item label="Max Users" class="modal__form-item">
+  <el-input
+    v-model.number="maxUsers"
+    type="number"
+    placeholder="Max users"
+    class="input-styled modal__input"
+  />
+</el-form-item>
+
     </el-form>
 
     <template #footer>
@@ -59,9 +68,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import api from '../utils/axiosConfig' // importa a instância axios configurada
 
 const props = defineProps<{ modelValue: boolean }>()
 const emit = defineEmits(['update:modelValue', 'create'])
+const maxUsers = ref<number>(4) // valor padrão
 
 const visible = ref(props.modelValue)
 
@@ -82,14 +93,25 @@ function handleClose() {
   visible.value = false
 }
 
-function createRide() {
-  emit('create', {
-    origin: origin.value,
-    destination: destination.value,
-    departure: departure.value,
-    cost: cost.value
-  })
-  handleClose()
+async function createRide() {
+  try {
+    const response = await api.post('/rides/create', {
+      origin: origin.value,
+      destination: destination.value,
+      time: new Date(departure.value).toISOString(),
+      totalValue: cost.value,
+      maxUsers: maxUsers.value
+    })
+
+    alert('Boleia criada com sucesso!')
+    console.log(response.data)
+
+    emit('create', response.data)
+    handleClose()
+  } catch (error) {
+    console.error(error)
+    alert(`Erro ao criar boleia: ${error.response?.data || error.message}`)
+  }
 }
 </script>
 

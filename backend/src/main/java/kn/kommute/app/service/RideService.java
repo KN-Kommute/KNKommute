@@ -39,19 +39,24 @@ public class RideService {
     public Ride createRide(Ride ride, Long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-
         ride.setOwner(owner);
         return rideRepository.save(ride);
     }
 
     public List<RideDTO> listRides() {
         List<Ride> rides = rideRepository.findAll();
-        List<RideDTO> response = new ArrayList<>();
-        for (Ride ride : rides) {
-            response.add(rideMapper.toRideDTO(ride));
-        }
-        return response;
+        return rides.stream().map(ride -> {
+            RideDTO dto = new RideDTO();
+            dto.setOrigin(ride.getOrigin());
+            dto.setDestination(ride.getDestination());
+            dto.setTime(ride.getTime());
+            dto.setTotalValue(ride.getTotalValue());
+            dto.setMaxUsers(ride.getMaxUsers());
+            dto.setTotalCarpoolers(ride.getTotalCarpoolers());
+            dto.setOwnerName(ride.getOwner().getName());
+
+            return dto;
+        }).toList();
     }
 
     public RideDTO participate(User user, Long rideId) {
@@ -64,8 +69,8 @@ public class RideService {
 
         ride.setTotalCarpoolers(ride.getTotalCarpoolers() + 1);
         Ride savedRide = rideRepository.save(ride);
-
         return rideMapper.toRideDTO(savedRide);
+
     }
 
     public Optional<RideDTO> findRideById(Long id) {

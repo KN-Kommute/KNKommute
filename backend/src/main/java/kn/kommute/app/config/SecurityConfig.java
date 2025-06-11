@@ -22,18 +22,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/commutes/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors();
+
+        http.csrf().disable();
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**", "/api/commutes/**").permitAll() // Rotas públicas
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Preflight do CORS
+                .anyRequest().authenticated() // Qualquer outra rota precisa estar autenticada
+        );
+
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-    // (Opcional) Caso precises do AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
