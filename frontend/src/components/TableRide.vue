@@ -36,7 +36,7 @@
       <div class="modal-content">
         <h2 class="modal-title">{{ selectedRide.owner }} Ride</h2>
         <p><strong>Owner:</strong> {{ selectedRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedRide.phone }}</p>
+        <p><strong>Contact:</strong> {{ selectedRide.ownerPhone }}</p>
         <p><strong>Date:</strong> {{ selectedRide.date }}</p>
         <p><strong>From:</strong> {{ selectedRide.from }}</p>
         <p><strong>To:</strong> {{ selectedRide.to }}</p>
@@ -88,13 +88,13 @@
     <!-- Modal de Detalhes -->
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
-        <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedDetailsRide.phone }}</p>
-        <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
-        <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
-        <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
-        <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
-        <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
+    <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
+    <p><strong>Contact:</strong> {{ selectedDetailsRide.phone ?? 'N/A' }}</p>  <!-- aqui -->
+    <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
+    <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
+    <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
+    <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
+    <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
         <div class="modal-footer">
           <el-button @click="showDetailsModal = false">Close</el-button>
         </div>
@@ -158,6 +158,7 @@ const showRideDetails = (ride) => {
   selectedDetailsRide.value = ride
   showDetailsModal.value = true
 }
+
 
 const getRowClass = ({ row }) => {
   return row.participating ? 'participating-row' : ''
