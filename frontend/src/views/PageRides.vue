@@ -37,44 +37,41 @@ const hasRides = computed(() => rides.value.length > 0)
 
 async function handleCreateRide(rideData: any) {
   try {
-    const response = await api.post('/rides/create', rideData, {
+    await api.post('/rides/create', rideData, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
     })
-    rides.value.push({
-      ...response.data,
-      from: response.data.origin,
-      to: response.data.destination,
-      date: new Date(response.data.time).toLocaleDateString('pt-PT'),
-      time: new Date(response.data.time).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
-      value: `${response.data.totalValue}€`,
-      participating: false,
-      owner: response.data.ownerName,
-      phone: response.data.ownerPhone,
-    })
+    await fetchRides()
     showModal.value = false
   } catch (error) {
     console.error('Erro ao criar viagem:', error)
   }
 }
-
 async function fetchRides() {
   try {
-    const response = await api.get('/rides')
-    rides.value = response.data.map((r: any) => ({
-      id: r.id,
-      owner: r.ownerName,
-      phone: r.phoneNumber,
-      date: new Date(r.time).toLocaleDateString('pt-PT'),
-      from: r.origin,
-      to: r.destination,
-      time: new Date(r.time).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
-      value: `${r.totalValue}€`,
-      participating: false
-    }))
-  } catch (err) {
-    console.error('Erro ao buscar rides:', err)
+    const response = await api.get('/rides', {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+
+    rides.value = response.data.map((ride: any) => ({
+      ...ride,
+      from: ride.origin,
+      to: ride.destination,
+      date: new Date(ride.time).toLocaleDateString('pt-PT'),
+      time: new Date(ride.time).toLocaleTimeString('pt-PT', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      value: `${ride.totalValue}€`,
+      participating: false,
+      owner: ride.ownerName,
+      ownerPhone: ride.phoneNumber, 
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar rides:', error);
   }
 }
 
