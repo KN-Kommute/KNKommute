@@ -93,25 +93,15 @@ function handleClose() {
   visible.value = false
 }
 
-async function createRide() {
-  try {
-    const response = await api.post('/rides/create', {
-      origin: origin.value,
-      destination: destination.value,
-      time: new Date(departure.value).toISOString(),
-      totalValue: cost.value,
-      maxUsers: maxUsers.value
-    })
-
-    alert('Boleia criada com sucesso!')
-    console.log(response.data)
-
-    emit('create', response.data)
-    handleClose()
-  } catch (error) {
-    console.error(error)
-    alert(`Erro ao criar boleia: ${error.response?.data || error.message}`)
-  }
+function createRide() {
+  emit('create', {
+    origin: origin.value,
+    destination: destination.value,
+    time: new Date(departure.value).toISOString(),
+    totalValue: cost.value,
+    maxUsers: maxUsers.value
+  })
+  handleClose()
 }
 </script>
 
