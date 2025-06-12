@@ -89,7 +89,7 @@
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
     <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-    <p><strong>Contact:</strong> {{ selectedDetailsRide.phone ?? 'N/A' }}</p> 
+    <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
     <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
     <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
     <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
