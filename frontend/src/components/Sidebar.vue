@@ -3,7 +3,7 @@
         <div class="Sidebar__user-header">
             <img src="@/assets/userprofile.png" alt="User Avatar" class="Sidebar__avatar" />
             <div class="Sidebar__user-text">
-              <span class="Sidebar__welcome">Welcome, {{ authStore.user?.name || 'User' }}</span>
+              <span class="Sidebar__welcome">Welcome, {{ authStore.user?.name}}</span>
             </div>
         </div>
 
