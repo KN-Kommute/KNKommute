@@ -16,9 +16,17 @@
           <input type="text" v-model="form.name" placeholder="Name" />
           <input type="email" placeholder="Email" v-model="form.email" readonly />
           <input type="text" v-model="form.phoneNumber" placeholder="Mobile Number" />
+
+          <!-- NOVO campo para password antiga -->
+          <input type="password" v-model="form.oldPassword" placeholder="Current password" />
+
           <input type="password" v-model="form.newPassword" placeholder="New password" />
-          <input type="password" v-model="form.repeatPassword" placeholder="Repeat new password" />
+          <input type="password" v-model="form.confirmNewPassword" placeholder="Repeat new password" />
+
           <button type="submit" class="__save-btn">Save profile</button>
+
+          <p v-if="message" style="color: green;">{{ message }}</p>
+          <p v-if="error" style="color: red;">{{ error }}</p>
         </form>
       </div>
     </main>
@@ -27,23 +35,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../utils/axiosConfig.ts'
 import Sidebar from '../components/Sidebar.vue'
 import Logo from '../components/KnLogo.vue'
 import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
 
-// Formulário
 const form = ref({
   name: '',
   email: '',
   phoneNumber: '',
+  oldPassword: '',
   newPassword: '',
   confirmNewPassword: ''
 })
 
-// Preenche os dados do user autenticado ao carregar
 onMounted(() => {
   const user = authStore.user
   if (user) {
@@ -53,14 +60,12 @@ onMounted(() => {
   }
 })
 
-// Mensagem de sucesso/erro
 const message = ref('')
 const error = ref('')
 
-// Atualizar nome
 async function updateName() {
   try {
-    const res = await axios.put('hhtps://localhost:8912/api/auth/profile/update-name', {
+    const res = await api.put('/auth/profile/update-name', {
       name: form.value.name
     })
     message.value = res.data
@@ -70,10 +75,9 @@ async function updateName() {
   }
 }
 
-// Atualizar contacto
 async function updatePhoneNumber() {
   try {
-    const res = await axios.put('hhtps://localhost:8912/api/auth/profile/update-contact', {
+    const res = await api.put('/auth/profile/update-contact', {
       phoneNumber: form.value.phoneNumber
     })
     message.value = res.data
@@ -83,7 +87,6 @@ async function updatePhoneNumber() {
   }
 }
 
-// Atualizar password
 async function updatePassword() {
   if (form.value.newPassword !== form.value.confirmNewPassword) {
     error.value = 'As passwords não coincidem.'
@@ -91,9 +94,9 @@ async function updatePassword() {
   }
 
   try {
-    const res = await axios.put('https://localhost:8912/api/auth/profile/update-password', {
-      oldPassword: '', // Opcional: podes adicionar campo para oldPassword se quiseres
-      newPassword: form.value.newPassword
+    const res = await api.put('/auth/profile/update-password', {
+      oldPassword: form.value.oldPassword,
+  newPassword: form.value.newPassword
     })
     message.value = res.data
     form.value.newPassword = ''
@@ -103,19 +106,18 @@ async function updatePassword() {
   }
 }
 
-// Submeter todas as alterações
-function saveProfile() {
-  error.value = ''
+
+
+async function saveProfile() {
   message.value = ''
-  updateName()
-  updatePhoneNumber()
+  error.value = ''
+  await updateName()
+  await updatePhoneNumber()
   if (form.value.newPassword || form.value.confirmNewPassword) {
-    updatePassword()
+    await updatePassword()
   }
 }
 </script>
-
-
 
 <style lang="scss">
 @import '@/components/style-common.scss';

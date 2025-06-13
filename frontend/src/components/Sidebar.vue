@@ -3,7 +3,7 @@
         <div class="Sidebar__user-header">
             <img src="@/assets/userprofile.png" alt="User Avatar" class="Sidebar__avatar" />
             <div class="Sidebar__user-text">
-                <span class="Sidebar__welcome">Welcome,</span>
+              <span class="Sidebar__welcome">Welcome, {{ authStore.user?.name}}</span>
             </div>
         </div>
 
@@ -35,7 +35,9 @@
 
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
+const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -80,11 +82,14 @@ function goToRides() {
   &__user-text {
     display: flex;
     flex-direction: column;
+    justify-content: center; // ✅ Centraliza o texto verticalmente
+    height: 70px; // ✅ Igual à imagem para alinhamento perfeito
   }
 
   &__welcome {
     font-size: 16px;
     opacity: 0.9;
+    line-height: 1.2; // ✅ Melhora o alinhamento interno do texto
   }
 
   &__nav {
@@ -94,30 +99,29 @@ function goToRides() {
     margin-top: 80px;
   }
 
-    &__nav-item {
-      background: none;
-      border: none;
-      color: white;
-      text-align: left;
-      padding: 12px 14px;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      max-width: 300px;
+  &__nav-item {
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 300px;
 
-  &--active {
-    background-color: white;
-    color: #002f6c;
-    border-radius: 10px;
+    &--active {
+      background-color: white;
+      color: #002f6c;
+      border-radius: 10px;
 
-    .Sidebar__nav-icon {
-      filter: brightness(0) saturate(100%) invert(12%) sepia(89%) saturate(2533%) hue-rotate(200deg) brightness(92%) contrast(105%);
+      .Sidebar__nav-icon {
+        filter: brightness(0) saturate(100%) invert(12%) sepia(89%) saturate(2533%) hue-rotate(200deg) brightness(92%) contrast(105%);
+      }
     }
   }
-}
-
 
   &__nav-icon {
     width: 20px;
@@ -138,4 +142,5 @@ function goToRides() {
     border-radius: 6px;
   }
 }
+
 </style>
