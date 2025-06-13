@@ -105,19 +105,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
+import { Ride } from '../types/KNRidesTypes'
 
-defineProps<{
+defineProps({
   rides: {
-    owner: string
-    phone: string
-    date: string
-    from: string
-    to: string
-    time: string
-    value: string
-    participating: boolean
-  }[]
-}>()
+    type: Array as PropType<Ride[]>,
+    required: true,
+  },
+})
 
 const pickupAddress = ref('')
 const showModal = ref(false)
