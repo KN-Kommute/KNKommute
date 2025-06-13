@@ -5,6 +5,7 @@ import kn.kommute.app.mapper.RideMapper;
 import kn.kommute.app.model.Ride;
 import kn.kommute.app.model.User;
 import kn.kommute.app.repository.RideRepository;
+import kn.kommute.app.repository.UserRepository;
 import kn.kommute.app.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,23 +27,37 @@ public class RideService {
     private final RideMapper rideMapper;
 
     @Autowired
+    private UserRepository userRepository;
+
+
+    @Autowired
     public RideService(RideRepository rideRepository, RideMapper rideMapper) {
         this.rideRepository = rideRepository;
         this.rideMapper = rideMapper;
     }
 
-    public Ride createRide(User user, RideDTO dto) {
-        Ride ride = rideMapper.toRide(dto, user);
+    public Ride createRide(Ride ride, Long userId) {
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        ride.setOwner(owner);
         return rideRepository.save(ride);
     }
 
     public List<RideDTO> listRides() {
         List<Ride> rides = rideRepository.findAll();
-        List<RideDTO> response = new ArrayList<>();
-        for (Ride ride : rides) {
-            response.add(rideMapper.toRideDTO(ride));
-        }
-        return response;
+        return rides.stream().map(ride -> {
+            RideDTO dto = new RideDTO();
+            dto.setOrigin(ride.getOrigin());
+            dto.setDestination(ride.getDestination());
+            dto.setTime(ride.getTime());
+            dto.setTotalValue(ride.getTotalValue());
+            dto.setMaxUsers(ride.getMaxUsers());
+            dto.setTotalCarpoolers(ride.getTotalCarpoolers());
+            dto.setOwnerName(ride.getOwner().getName());
+            dto.setPhoneNumber(ride.getOwner().getPhoneNumber());
+
+            return dto;
+        }).toList();
     }
 
     public RideDTO participate(User user, Long rideId) {
@@ -55,8 +70,8 @@ public class RideService {
 
         ride.setTotalCarpoolers(ride.getTotalCarpoolers() + 1);
         Ride savedRide = rideRepository.save(ride);
-
         return rideMapper.toRideDTO(savedRide);
+
     }
 
     public Optional<RideDTO> findRideById(Long id) {
