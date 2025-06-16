@@ -2,7 +2,7 @@ package kn.kommute.app.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,12 +25,13 @@ public class Participation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private String status;
-
-    @Column(name = "joined_loc",nullable = false, length = 255)
-    private String origin;
+    @Column(name = "joined_location",nullable = false, length = 255)
+    private String pickupLocation;
 
     @Column(name = "joined_at", nullable = false)
-    private LocalDateTime time;;
+    private LocalDateTime pickupTime;
+
+    @Column(name = "status", nullable = false)
+    private String status = "TEMP";
+
 }
