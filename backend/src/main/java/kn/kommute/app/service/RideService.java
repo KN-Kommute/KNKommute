@@ -40,6 +40,7 @@ public class RideService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         ride.setOwner(owner);
+        ride.setTotalCarpoolers(1);
         return rideRepository.save(ride);
     }
 

@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface ParticipationRepository extends JpaRepository<Participation, Long> {
     List<Participation> findByRide(Ride ride);
-    Optional<Participation> findByIdAndRideId(Long participationId, Long rideId);
+    boolean existsByRideIdAndUserId(Long rideId, Long userId);
+    List<Participation> findByRideOrderByIdAsc(Ride ride);
 }
