@@ -27,15 +27,16 @@ import { useAuthStore } from '../stores/auth'
 import Sidebar from '../components/Sidebar.vue'
 import Logo from '../components/KnLogo.vue'
 import CreateRide from '../components/CreateRide.vue'
+import type { RideData, Ride } from '../types/KNRidesTypes'
 
 const TableRide = defineAsyncComponent(() => import('../components/TableRide.vue'))
 
 const authStore = useAuthStore()
-const rides = ref<any[]>([])
 const showModal = ref(false)
 const hasRides = computed(() => rides.value.length > 0)
+const rides = ref<Ride[]>([])
 
-async function handleCreateRide(rideData: any) {
+async function handleCreateRide(rideData: RideData) {
   try {
     await api.post('/rides/create', rideData, {
       headers: {
@@ -48,6 +49,7 @@ async function handleCreateRide(rideData: any) {
     console.error('Erro ao criar viagem:', error)
   }
 }
+
 async function fetchRides() {
   try {
     const response = await api.get('/rides', {

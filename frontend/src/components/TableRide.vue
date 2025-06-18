@@ -89,7 +89,7 @@
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
     <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-    <p><strong>Contact:</strong> {{ selectedDetailsRide.phone ?? 'N/A' }}</p> 
+    <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
     <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
     <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
     <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
@@ -105,19 +105,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
+import { Ride } from '../types/KNRidesTypes'
 
-defineProps<{
+defineProps({
   rides: {
-    owner: string
-    phone: string
-    date: string
-    from: string
-    to: string
-    time: string
-    value: string
-    participating: boolean
-  }[]
-}>()
+    type: Array as PropType<Ride[]>,
+    required: true,
+  },
+})
 
 const pickupAddress = ref('')
 const showModal = ref(false)
