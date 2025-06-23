@@ -16,18 +16,43 @@
           <input type="text" v-model="form.name" placeholder="Name" />
           <input type="email" placeholder="Email" v-model="form.email" readonly />
           <input type="text" v-model="form.phoneNumber" placeholder="Mobile Number" />
-
-          <!-- NOVO campo para password antiga -->
-          <input type="password" v-model="form.oldPassword" placeholder="Current password" />
-
           <input type="password" v-model="form.newPassword" placeholder="New password" />
-          <input type="password" v-model="form.confirmNewPassword" placeholder="Repeat new password" />
-
+          <input
+            type="password"
+            v-model="form.confirmNewPassword"
+            placeholder="Repeat new password"
+          />
           <button type="submit" class="__save-btn">Save profile</button>
-
-          <p v-if="message" style="color: green;">{{ message }}</p>
-          <p v-if="error" style="color: red;">{{ error }}</p>
         </form>
+
+        <!-- TABELA DE PEDIDOS -->
+        <table class="Profile__table">
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lisbon</td>
+              <td>Porto</td>
+              <td>
+                <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
+                <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Braga</td>
+              <td>Coimbra</td>
+              <td>
+                <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
+                <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </main>
   </div>
@@ -48,7 +73,7 @@ const form = ref({
   phoneNumber: '',
   oldPassword: '',
   newPassword: '',
-  confirmNewPassword: ''
+  confirmNewPassword: '',
 })
 
 onMounted(() => {
@@ -65,8 +90,8 @@ const error = ref('')
 
 async function updateName() {
   try {
-    const res = await api.put('/auth/profile/update-name', {
-      name: form.value.name
+    const res = await axios.put('https://localhost:8912/api/auth/profile/update-name', {
+      name: form.value.name,
     })
     message.value = res.data
     authStore.user.name = form.value.name
@@ -77,8 +102,8 @@ async function updateName() {
 
 async function updatePhoneNumber() {
   try {
-    const res = await api.put('/auth/profile/update-contact', {
-      phoneNumber: form.value.phoneNumber
+    const res = await axios.put('https://localhost:8912/api/auth/profile/update-contact', {
+      phoneNumber: form.value.phoneNumber,
     })
     message.value = res.data
     authStore.user.phoneNumber = form.value.phoneNumber
@@ -94,9 +119,9 @@ async function updatePassword() {
   }
 
   try {
-    const res = await api.put('/auth/profile/update-password', {
-      oldPassword: form.value.oldPassword,
-  newPassword: form.value.newPassword
+    const res = await axios.put('https://localhost:8912/api/auth/profile/update-password', {
+      oldPassword: '',
+      newPassword: form.value.newPassword,
     })
     message.value = res.data
     form.value.newPassword = ''
@@ -106,9 +131,8 @@ async function updatePassword() {
   }
 }
 
-
-
-async function saveProfile() {
+function saveProfile() {
+  error.value = ''
   message.value = ''
   error.value = ''
   await updateName()
@@ -166,5 +190,79 @@ async function saveProfile() {
   align-self: flex-end;
   font-size: 14px;
   border-radius: 6px;
+}
+
+// NOVO ESTILO MINIMALISTA
+.Profile__table {
+  width: 100%;
+  margin-top: 2rem;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  font-size: 14px;
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    color: #444;
+    font-weight: 600;
+    background-color: transparent;
+    border-bottom: 1px solid #ddd;
+  }
+
+  td {
+    padding: 12px 16px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    vertical-align: middle;
+  }
+
+  tr {
+    transition: transform 0.2s ease;
+  }
+
+  tr:hover {
+    transform: scale(1.01);
+  }
+
+  td:first-child,
+  td:last-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
+.Profile__btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-right: 6px;
+
+  &--accept {
+    background-color: #e0f7ec;
+    color: #1e7f5c;
+
+    &:hover {
+      background-color: #c8f0df;
+    }
+  }
+
+  &--reject {
+    background-color: #fdecea;
+    color: #c0392b;
+
+    &:hover {
+      background-color: #fbd5d1;
+    }
+  }
 }
 </style>
