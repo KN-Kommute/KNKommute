@@ -6,13 +6,6 @@
       :row-class-name="getRowClass"
       header-cell-class-name="custom-header"
     >
-    <el-table-column  label="Current User" align="left">
-
-            <template #default>
-              {{ authStore.user.id }}
-              </template>
-
-          </el-table-column>
       <el-table-column prop="owner" label="Owner" align="left" />
       <el-table-column prop="date" label="Date" align="left" />
       <el-table-column prop="from" label="From" align="left" />
@@ -30,18 +23,9 @@
               class="participate-btn"
               :class="scope.row.participating ? 'cancel' : 'participate'"
               @click="handleParticipation(scope.row)"
-              v-if="scope.row.ownerId !== authStore.user.id"
             >
               {{ scope.row.participating ? 'Cancel' : 'Participate' }}
             </el-button>
-            <el-button
-                          size="small"
-                          class="approve-btn"
-                          @click="showRideToApprove(scope.row)"
-                          v-if="scope.row.ownerId == authStore.user.id"
-                        >
-                          {{ 'Rides to Approve' }}
-                    </el-button>
           </div>
         </template>
       </el-table-column>
@@ -116,11 +100,6 @@
         </div>
       </div>
     </el-dialog>
-    <!-- Modal de Rides to Approve -->
-        <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" width="400px" center>
-          <div class="modal-content">
-          </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -128,9 +107,7 @@
 import { ref } from 'vue'
 import type { PropType } from 'vue'
 import { Ride } from '../types/KNRidesTypes'
-import { useAuthStore } from '../stores/auth'
 
-const authStore =useAuthStore()
 defineProps({
   rides: {
     type: Array as PropType<Ride[]>,
@@ -144,7 +121,6 @@ const showCancelModal = ref(false)
 const showDetailsModal = ref(false)
 const showConfirmParticipationModal = ref(false)
 
-const showRidesToApproveModal = ref(false)
 const selectedRide = ref({})
 const selectedDetailsRide = ref({})
 const cancelTargetRide = ref({})
@@ -179,11 +155,6 @@ const showRideDetails = (ride) => {
   showDetailsModal.value = true
 }
 
-
-const showRideToApprove = (ride) => {
-  //selectedRidesToApprove.value = ride
-  showRidesToApproveModal.value = true
-}
 
 const getRowClass = ({ row }) => {
   return row.participating ? 'participating-row' : ''
