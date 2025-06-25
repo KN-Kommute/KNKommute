@@ -69,8 +69,9 @@ async function fetchRides() {
       }),
       value: `${ride.totalValue}€`,
       participating: false,
+      ownerId: ride.ownerId,
       owner: ride.ownerName,
-      ownerPhone: ride.phoneNumber, 
+      ownerPhone: ride.phoneNumber,
     }));
   } catch (error) {
     console.error('Erro ao buscar rides:', error);
