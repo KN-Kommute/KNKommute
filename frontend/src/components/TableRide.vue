@@ -6,14 +6,13 @@
       :row-class-name="getRowClass"
       header-cell-class-name="custom-header"
     >
-    <el-table-column  label="Current User" align="left">
-
-            <template #default>
-              {{ authStore.user.id }}
-              </template>
-
-          </el-table-column>
+      <el-table-column label="Current User" align="left">
+        <template #default>
+          {{ authStore.user.id }}
+        </template>
+      </el-table-column>
       <el-table-column prop="owner" label="Owner" align="left" />
+      <el-table-column prop="phone" label="Phone" align="left" />
       <el-table-column prop="date" label="Date" align="left" />
       <el-table-column prop="from" label="From" align="left" />
       <el-table-column prop="to" label="To" align="left" />
@@ -35,20 +34,20 @@
               {{ scope.row.participating ? 'Cancel' : 'Participate' }}
             </el-button>
             <el-button
-                          size="small"
-                          class="approve-btn"
-                          @click="showRideToApprove(scope.row)"
-                          v-if="scope.row.ownerId == authStore.user.id"
-                        >
-                          {{ 'Rides to Approve' }}
-                    </el-button>
+              size="small"
+              class="approve-btn"
+              @click="showRideToApprove(scope.row)"
+              v-if="scope.row.ownerId === authStore.user.id"
+            >
+              Rides to Approve
+            </el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- Modal de Participação -->
-    <el-dialog v-model="showModal" width="400px" :show-close="true" center>
+    <!-- Modal Participação -->
+    <el-dialog v-model="showModal" width="400px" center>
       <div class="modal-content">
         <h2 class="modal-title">{{ selectedRide.owner }} Ride</h2>
         <p><strong>Owner:</strong> {{ selectedRide.owner }}</p>
@@ -64,23 +63,28 @@
           <el-input v-model="pickupAddress" placeholder="Enter your pickup location" clearable />
         </el-form-item>
 
+        <el-form-item label="Pickup time">
+          <el-time-picker
+            v-model="pickupTime"
+            placeholder="Select pickup time"
+            format="HH:mm"
+            value-format="HH:mm"
+            clearable
+            style="width: 100%"
+          />
+        </el-form-item>
+
         <div class="modal-footer">
           <el-button @click="showModal = false">Go back</el-button>
-          <el-button type="primary" @click="openConfirmModal" :disabled="!pickupAddress.trim()">
+          <el-button type="primary" @click="openConfirmModal" :disabled="!pickupAddress.trim() || !pickupTime">
             Participate
           </el-button>
         </div>
       </div>
     </el-dialog>
 
-    <!-- Modal de Confirmação de Participação -->
-    <el-dialog
-      v-model="showConfirmParticipationModal"
-      title="Confirm Participation"
-      width="400px"
-      center
-      top="23vh"
-    >
+    <!-- Modal confirmação participação -->
+    <el-dialog v-model="showConfirmParticipationModal" title="Confirm Participation" width="400px" center top="23vh">
       <div class="modal-content">
         <p>Are you sure you want to participate in this ride?</p>
         <div class="modal-footer">
@@ -90,7 +94,7 @@
       </div>
     </el-dialog>
 
-    <!-- Modal de Cancelamento -->
+    <!-- Modal cancelar participação -->
     <el-dialog v-model="showCancelModal" title="Cancel Participation?" width="400px" center>
       <div class="modal-content">
         <p>Are you sure you want to cancel your participation?</p>
@@ -101,25 +105,27 @@
       </div>
     </el-dialog>
 
-    <!-- Modal de Detalhes -->
+    <!-- Modal detalhes da boleia -->
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
-    <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-    <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
-    <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
-    <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
-    <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
-    <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
-    <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
+        <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
+        <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
+        <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
+        <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
+        <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
+        <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
+        <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
         <div class="modal-footer">
           <el-button @click="showDetailsModal = false">Close</el-button>
         </div>
       </div>
     </el-dialog>
-    <!-- Modal de Rides to Approve -->
-        <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" width="400px" center>
-          <div class="modal-content">
-          </div>
+
+    <!-- Modal rides to approve -->
+    <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" width="400px" center>
+      <div class="modal-content">
+        <!-- Conteúdo do modal de aprovação -->
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -128,9 +134,14 @@
 import { ref } from 'vue'
 import type { PropType } from 'vue'
 import { Ride } from '../types/KNRidesTypes'
+import api from '../utils/axiosConfig'
 import { useAuthStore } from '../stores/auth'
 
-const authStore =useAuthStore()
+const authStore = useAuthStore()
+
+const pickupAddress = ref('')
+const pickupTime = ref('')
+
 defineProps({
   rides: {
     type: Array as PropType<Ride[]>,
@@ -138,35 +149,59 @@ defineProps({
   },
 })
 
-const pickupAddress = ref('')
 const showModal = ref(false)
 const showCancelModal = ref(false)
 const showDetailsModal = ref(false)
 const showConfirmParticipationModal = ref(false)
-
 const showRidesToApproveModal = ref(false)
-const selectedRide = ref({})
-const selectedDetailsRide = ref({})
-const cancelTargetRide = ref({})
 
-const handleParticipation = (ride) => {
+const selectedRide = ref<any>({})
+const selectedDetailsRide = ref<any>({})
+const cancelTargetRide = ref<any>({})
+
+// Função para formatar a data (exemplo: '2025-06-25')
+function formatDateToISO(date: string) {
+  return new Date(date).toISOString().split('T')[0]
+}
+
+const confirmParticipation = async () => {
+  try {
+    // Formar a data completa ISO com a data da boleia e o horário selecionado
+    const isoDate = formatDateToISO(selectedRide.value.date)
+    const joinedAtISO = `${isoDate}T${pickupTime.value}:00`
+
+    await api.post(`/rides/${selectedRide.value.id}/participations`, {
+      pickupLocation: pickupAddress.value,
+      pickupTime: joinedAtISO,
+      status: 'TEMP',
+    })
+
+    selectedRide.value.participating = true
+    showConfirmParticipationModal.value = false
+    showModal.value = false
+    pickupAddress.value = ''
+    pickupTime.value = ''
+  } catch (error) {
+    console.error('Erro ao participar na boleia:', error)
+  }
+}
+
+const handleParticipation = (ride: any) => {
   if (ride.participating) {
     cancelTargetRide.value = ride
     showCancelModal.value = true
   } else {
     selectedRide.value = ride
+    pickupAddress.value = ''
+    pickupTime.value = ''
     showModal.value = true
   }
 }
 
 const openConfirmModal = () => {
-  showConfirmParticipationModal.value = true
-}
-
-const confirmParticipation = () => {
-  selectedRide.value.participating = true
-  showConfirmParticipationModal.value = false
-  showModal.value = false
+  if (pickupAddress.value.trim() && pickupTime.value) {
+    showConfirmParticipationModal.value = true
+  }
 }
 
 const confirmCancel = () => {
@@ -174,23 +209,22 @@ const confirmCancel = () => {
   showCancelModal.value = false
 }
 
-const showRideDetails = (ride) => {
+const showRideDetails = (ride: any) => {
   selectedDetailsRide.value = ride
   showDetailsModal.value = true
 }
 
-
-const showRideToApprove = (ride) => {
-  //selectedRidesToApprove.value = ride
-  showRidesToApproveModal.value = true
+const showRideToApprove = (ride: any) => {
+  showRidesToApproveModal.value = true
 }
 
-const getRowClass = ({ row }) => {
+const getRowClass = ({ row }: any) => {
   return row.participating ? 'participating-row' : ''
 }
 </script>
 
 <style scoped>
+/* mantém o teu CSS igual */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 .el-table {

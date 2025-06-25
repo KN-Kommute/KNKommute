@@ -1,7 +1,9 @@
 package kn.kommute.app.controller;
 
+import kn.kommute.app.dto.ParticipationDTO;
 import kn.kommute.app.dto.RideDTO;
 import kn.kommute.app.mapper.RideMapper;
+import kn.kommute.app.model.Participation;
 import kn.kommute.app.model.Ride;
 import kn.kommute.app.model.User;
 import kn.kommute.app.service.RideService;
@@ -12,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import kn.kommute.app.service.ParticipationService;
+import kn.kommute.app.mapper.ParticipationMapper;
 
 import java.util.List;
 
@@ -22,6 +26,10 @@ public class RideController {
     private final RideService rideService;
     @Autowired
     private final RideMapper rideMapper;
+    @Autowired
+    private ParticipationService participationService;
+    @Autowired
+    private ParticipationMapper participationMapper;
 
     public RideController(RideService rideService, RideMapper rideMapper) {
         this.rideService = rideService;
@@ -63,6 +71,34 @@ public class RideController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{rideId}/participations")
+    public ResponseEntity<ParticipationDTO> createParticipation(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long rideId,
+            @RequestBody ParticipationDTO request
+    ) {
+        ParticipationDTO dto = participationService.createParticipation(
+                user.getId(),
+                rideId,
+                request.getPickupLocation(),
+                request.getPickupTime()
+        );
 
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{rideId}/participations/{participationId}/accept")
+    public ResponseEntity<ParticipationDTO> acceptParticipation(@AuthenticationPrincipal User user, @PathVariable Long rideId, @PathVariable Long participationId) {
+        Participation participation = participationService.acceptParticipation(rideId, participationId, user.getId());
+        ParticipationDTO dto = participationMapper.toDTO(participation);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{rideId}/participations/{participationId}/reject")
+    public ResponseEntity<Void> rejectParticipation(@AuthenticationPrincipal User rideOwner, @PathVariable Long rideId, @PathVariable Long participationId
+    ) {
+        participationService.rejectParticipation(participationId, rideOwner.getId());
+        return ResponseEntity.ok().build();
+}
 
 }

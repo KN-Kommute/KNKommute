@@ -8,6 +8,7 @@ import java.time.LocalTime;
 
 @Data
 public class RideDTO {
+    private Long id;
     private String origin;
     private String destination;
     private LocalDateTime time;
