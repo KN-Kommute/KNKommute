@@ -45,6 +45,7 @@ public class ParticipationService {
         participation.setUser(participant);
         participation.setPickupLocation(pickupLocation);
         participation.setPickupTime(pickupTime);
+        participation.setStatus("PENDING");
 
         Participation saved = participationRepository.save(participation);
 
@@ -56,6 +57,7 @@ public class ParticipationService {
         dto.setParticipantPhoneNumber(participant.getPhoneNumber());
         dto.setPickupLocation(pickupLocation);
         dto.setPickupTime(pickupTime);
+        dto.setStatus(saved.getStatus());
 
         return dto;
     }
@@ -71,26 +73,12 @@ public class ParticipationService {
         Participation participation = participationRepository.findById(participationId)
                 .orElseThrow(() -> new RuntimeException("Participation not found"));
 
-        if (!participation.getRide().getId().equals(rideId)) {
-            throw new RuntimeException("Participation does not belong to this ride");
-        }
-
-        List<Participation> participations = participationRepository.findByRideOrderByIdAsc(ride); // use ordenado
-        int acceptedCount = ride.getTotalCarpoolers();
-
-        // Os aceites são os primeiros totalCarpoolers participations
-        List<Long> acceptedParticipationIds = new ArrayList<>();
-        for (int i = 0; i < acceptedCount && i < participations.size(); i++) {
-            acceptedParticipationIds.add(participations.get(i).getId());
-        }
-
-        if (acceptedParticipationIds.contains(participationId)) {
-            throw new RuntimeException("This participation has already been accepted");
-        }
 
         if (ride.getTotalCarpoolers() >= ride.getMaxUsers()) {
             throw new RuntimeException("Ride is already full");
         }
+
+        participation.setStatus("ACCEPTED");
         ride.setTotalCarpoolers(ride.getTotalCarpoolers() + 1);
         rideRepository.save(ride);
 
@@ -110,13 +98,9 @@ public class ParticipationService {
         participationRepository.delete(participation);
     }
 
-    public List<ParticipationDTO> listByRide(Long rideId, Long ownerId) {
+    public List<ParticipationDTO> listByRide(Long rideId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
-
-        if (!ride.getOwner().getId().equals(ownerId)) {
-            throw new RuntimeException("You are not the owner of this ride");
-        }
 
         List<Participation> participations = participationRepository.findByRide(ride);
         List<ParticipationDTO> dtos = new ArrayList<>();
@@ -130,7 +114,7 @@ public class ParticipationService {
             dto.setParticipantPhoneNumber(p.getUser().getPhoneNumber());
             dto.setPickupLocation(p.getPickupLocation());
             dto.setPickupTime(p.getPickupTime());
-
+            dto.setStatus(p.getStatus());
             dtos.add(dto);
         }
 

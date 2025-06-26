@@ -71,8 +71,8 @@ public class RideController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{rideId}/participations")
-    public ResponseEntity<ParticipationDTO> createParticipation(
+     @PostMapping("/{rideId}/participation")
+     public ResponseEntity<ParticipationDTO> createParticipation(
             @AuthenticationPrincipal User user,
             @PathVariable Long rideId,
             @RequestBody ParticipationDTO request
@@ -83,22 +83,26 @@ public class RideController {
                 request.getPickupLocation(),
                 request.getPickupTime()
         );
-
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{rideId}/participations/{participationId}/accept")
+    @PostMapping("/{rideId}/participation/{participationId}/accept")
     public ResponseEntity<ParticipationDTO> acceptParticipation(@AuthenticationPrincipal User user, @PathVariable Long rideId, @PathVariable Long participationId) {
         Participation participation = participationService.acceptParticipation(rideId, participationId, user.getId());
         ParticipationDTO dto = participationMapper.toDTO(participation);
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/{rideId}/participations/{participationId}/reject")
+    @PostMapping("/{rideId}/participation/{participationId}/reject")
     public ResponseEntity<Void> rejectParticipation(@AuthenticationPrincipal User rideOwner, @PathVariable Long rideId, @PathVariable Long participationId
     ) {
         participationService.rejectParticipation(participationId, rideOwner.getId());
         return ResponseEntity.ok().build();
 }
+
+    @GetMapping("/{rideId}/participations")
+    public ResponseEntity<List<ParticipationDTO>> listParticipationOfRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(participationService.listByRide(rideId));
+    }
 
 }

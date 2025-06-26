@@ -1,18 +1,14 @@
 <template>
   <div class="p-8">
-    <el-table
-      :data="rides"
-      style="width: 100%; border: none"
-      :row-class-name="getRowClass"
-      header-cell-class-name="custom-header"
-    >
+    <el-table :data="rides" style="width: 100%; border: none" :row-class-name="getRowClass"
+      header-cell-class-name="custom-header">
       <el-table-column label="Current User" align="left">
         <template #default>
           {{ authStore.user.id }}
         </template>
       </el-table-column>
       <el-table-column prop="owner" label="Owner" align="left" />
-      <el-table-column prop="phone" label="Phone" align="left" />
+      <el-table-column prop="phoneNumber" label="Phone" align="left" />
       <el-table-column prop="date" label="Date" align="left" />
       <el-table-column prop="from" label="From" align="left" />
       <el-table-column prop="to" label="To" align="left" />
@@ -24,21 +20,12 @@
             <el-button size="small" class="details-btn" @click="showRideDetails(scope.row)">
               Details
             </el-button>
-            <el-button
-              size="small"
-              class="participate-btn"
-              :class="scope.row.participating ? 'cancel' : 'participate'"
-              @click="handleParticipation(scope.row)"
-              v-if="scope.row.ownerId !== authStore.user.id"
-            >
+            <el-button size="small" class="participate-btn" :class="scope.row.participating ? 'cancel' : 'participate'"
+              @click="handleParticipation(scope.row)" v-if="scope.row.ownerId !== authStore.user.id">
               {{ scope.row.participating ? 'Cancel' : 'Participate' }}
             </el-button>
-            <el-button
-              size="small"
-              class="approve-btn"
-              @click="showRideToApprove(scope.row)"
-              v-if="scope.row.ownerId === authStore.user.id"
-            >
+            <el-button size="small" class="approve-btn" @click="showRideToApprove(scope.row)"
+              v-if="scope.row.ownerId === authStore.user.id">
               Rides to Approve
             </el-button>
           </div>
@@ -51,29 +38,23 @@
       <div class="modal-content">
         <h2 class="modal-title">{{ selectedRide.owner }} Ride</h2>
         <p><strong>Owner:</strong> {{ selectedRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedRide.ownerPhone }}</p>
+        <p><strong>Contact:</strong> {{ selectedRide.phoneNumber }}</p>
         <p><strong>Date:</strong> {{ selectedRide.date }}</p>
         <p><strong>From:</strong> {{ selectedRide.from }}</p>
         <p><strong>To:</strong> {{ selectedRide.to }}</p>
         <p><strong>Time:</strong> {{ selectedRide.time }}h</p>
         <p><strong>Total value:</strong> {{ selectedRide.value }}</p>
-        <p><strong>Total participants of this ride:</strong> 5</p>
+        <p><strong>Total participants of this ride:</strong> {{ selectedRide.participantCount }}</p>
+
 
         <el-form-item label="Pickup address">
           <el-input v-model="pickupAddress" placeholder="Enter your pickup location" clearable />
         </el-form-item>
 
-        <el-form-item label="Pickup time">
-          <el-time-picker
-            v-model="pickupTime"
-            placeholder="Select pickup time"
-            format="HH:mm"
-            value-format="HH:mm"
-            clearable
-            style="width: 100%"
-          />
+        <el-form-item label="Pickup date and time">
+          <el-date-picker v-model="pickupTime" type="datetime" placeholder="Select pickup date and time"
+            format="YYYY-MM-DD HH:mm" value-format="YYYY-MM-DDTHH:mm" style="width: 100%" />
         </el-form-item>
-
         <div class="modal-footer">
           <el-button @click="showModal = false">Go back</el-button>
           <el-button type="primary" @click="openConfirmModal" :disabled="!pickupAddress.trim() || !pickupTime">
@@ -122,40 +103,34 @@
     </el-dialog>
 
     <!-- Modal rides to approve -->
-    <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" width="400px" center>
+    <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" center>
       <div class="modal-content">
-<!-- TABELA DE PEDIDOS -->
-<table class="Profile__table">
-      <thead>
-      <tr>
-        <th>Participant</th>
-        <th>From</th>
-        <th>To</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>Afonso</td>
-        <td>Lisbon</td>
-        <td>Porto</td>
-        <td>
-          <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
-          <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
-        </td>
-      </tr>
-      <tr>
-        <td>Diogo</td>
-        <td>Braga</td>
-        <td>Coimbra</td>
-        <td>
-          <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
-          <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-
+        <!-- TABELA DE PEDIDOS -->
+        <table class="Profile__table">
+          <thead>
+            <tr>
+              <th>Participant</th>
+              <th>Location</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="participant in pendingParticipations" :key="participant.id">
+              <td>{{ participant.participantName }}</td>
+              <td>{{ participant.pickupLocation }}</td>
+              <td>{{ participant.pickupTime }}</td>
+              <td>
+                <button @click="acceptParticipation(participant)" :disabled="participant.status !== 'PENDING'">
+                  ✓ Accept
+                </button>
+                <button class="Profile__btn Profile__btn--reject" @click="rejectParticipation(participant)">
+                  ✕ Reject
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </el-dialog>
   </div>
@@ -172,6 +147,8 @@ const authStore = useAuthStore()
 
 const pickupAddress = ref('')
 const pickupTime = ref('')
+
+const pendingParticipations = ref<any[]>([])
 
 defineProps({
   rides: {
@@ -190,6 +167,7 @@ const selectedRide = ref<any>({})
 const selectedDetailsRide = ref<any>({})
 const cancelTargetRide = ref<any>({})
 
+
 // Função para formatar a data (exemplo: '2025-06-25')
 function formatDateToISO(date: string) {
   return new Date(date).toISOString().split('T')[0]
@@ -197,14 +175,9 @@ function formatDateToISO(date: string) {
 
 const confirmParticipation = async () => {
   try {
-    // Formar a data completa ISO com a data da boleia e o horário selecionado
-    const isoDate = formatDateToISO(selectedRide.value.date)
-    const joinedAtISO = `${isoDate}T${pickupTime.value}:00`
-
-    await api.post(`/rides/${selectedRide.value.id}/participations`, {
+    await api.post(`/rides/${selectedRide.value.id}/participation`, {
       pickupLocation: pickupAddress.value,
-      pickupTime: joinedAtISO,
-      status: 'TEMP',
+      pickupTime: pickupTime.value, // já em ISO tipo: 2025-06-27T08:30
     })
 
     selectedRide.value.participating = true
@@ -229,6 +202,20 @@ const handleParticipation = (ride: any) => {
   }
 }
 
+const acceptParticipation = async (arg) => {
+  console.log('acceptParticipation')
+  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/accept`, {
+  })
+}
+
+
+const rejectParticipation = async (arg) => {
+  console.log('rejectParticipation')
+  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/reject`, {
+  })
+}
+
+
 const openConfirmModal = () => {
   if (pickupAddress.value.trim() && pickupTime.value) {
     showConfirmParticipationModal.value = true
@@ -245,13 +232,22 @@ const showRideDetails = (ride: any) => {
   showDetailsModal.value = true
 }
 
-const showRideToApprove = (ride: any) => {
+const showRideToApprove = async (ride: any) => {
+  selectedDetailsRide.value = ride
   showRidesToApproveModal.value = true
+  try {
+    const response = await api.get(`/rides/${ride.id}/participations`)
+    pendingParticipations.value = response.data.filter(p => p.status === 'PENDING')
+  } catch (error) {
+    console.error('Erro ao carregar participações:', error)
+  }
 }
+
 
 const getRowClass = ({ row }: any) => {
   return row.participating ? 'participating-row' : ''
 }
+
 </script>
 
 <style scoped>
@@ -272,7 +268,7 @@ const getRowClass = ({ row }: any) => {
   border: ' none';
 }
 
-.el-table >>> .el-table__header th.custom-header {
+.el-table>>>.el-table__header th.custom-header {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 13px;
@@ -292,7 +288,7 @@ const getRowClass = ({ row }: any) => {
   background-color: #fff;
 }
 
-.el-table__body tr:hover > td {
+.el-table__body tr:hover>td {
   background-color: #f9fafb;
 }
 
@@ -424,33 +420,32 @@ const getRowClass = ({ row }: any) => {
   }
 
   .Profile__btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-right: 6px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-right: 6px;
 
-  &--accept {
-    background-color: #e0f7ec;
-    color: #1e7f5c;
+    &--accept {
+      background-color: #e0f7ec;
+      color: #1e7f5c;
 
-    &:hover {
-      background-color: #c8f0df;
+      &:hover {
+        background-color: #c8f0df;
+      }
     }
-  }
 
-  &--reject {
-    background-color: #fdecea;
-    color: #c0392b;
+    &--reject {
+      background-color: #fdecea;
+      color: #c0392b;
 
-    &:hover {
-      background-color: #fbd5d1;
+      &:hover {
+        background-color: #fbd5d1;
+      }
     }
   }
 }
-}
-
 </style>

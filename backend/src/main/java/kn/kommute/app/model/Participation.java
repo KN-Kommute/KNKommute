@@ -32,6 +32,13 @@ public class Participation {
     private LocalDateTime pickupTime;
 
     @Column(name = "status", nullable = false)
-    private String status = "TEMP";
+    private String status;
+
+//    public enum ParticipationStatus {
+//        PENDING,
+//        ACCEPTED,
+//        REJECTED
+//    }
+
 
 }

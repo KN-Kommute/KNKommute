@@ -1,5 +1,6 @@
 package kn.kommute.app.dto;
 
+import kn.kommute.app.model.Participation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,6 @@ public class ParticipationDTO {
     private String participantPhoneNumber;
     private String pickupLocation;
     private LocalDateTime pickupTime;
+    private String status;
+
 }
