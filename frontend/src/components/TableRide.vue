@@ -124,7 +124,38 @@
     <!-- Modal rides to approve -->
     <el-dialog v-model="showRidesToApproveModal" title="Ride to Approve Details" width="400px" center>
       <div class="modal-content">
-        <!-- Conteúdo do modal de aprovação -->
+<!-- TABELA DE PEDIDOS -->
+<table class="Profile__table">
+      <thead>
+      <tr>
+        <th>Participant</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Afonso</td>
+        <td>Lisbon</td>
+        <td>Porto</td>
+        <td>
+          <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
+          <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Diogo</td>
+        <td>Braga</td>
+        <td>Coimbra</td>
+        <td>
+          <button class="Profile__btn Profile__btn--accept">✓ Accept</button>
+          <button class="Profile__btn Profile__btn--reject">✕ Reject</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
       </div>
     </el-dialog>
   </div>
@@ -348,4 +379,78 @@ const getRowClass = ({ row }: any) => {
 .pickup-input .el-input__inner {
   color: #003369;
 }
+
+.Profile__table {
+  width: 100%;
+  margin-top: 2rem;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  font-size: 14px;
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    color: #444;
+    font-weight: 600;
+    background-color: transparent;
+    border-bottom: 1px solid #ddd;
+  }
+
+  td {
+    padding: 12px 16px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    vertical-align: middle;
+  }
+
+  tr {
+    transition: transform 0.2s ease;
+  }
+
+  tr:hover {
+    transform: scale(1.01);
+  }
+
+  td:first-child,
+  td:last-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  .Profile__btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-right: 6px;
+
+  &--accept {
+    background-color: #e0f7ec;
+    color: #1e7f5c;
+
+    &:hover {
+      background-color: #c8f0df;
+    }
+  }
+
+  &--reject {
+    background-color: #fdecea;
+    color: #c0392b;
+
+    &:hover {
+      background-color: #fbd5d1;
+    }
+  }
+}
+}
+
 </style>
