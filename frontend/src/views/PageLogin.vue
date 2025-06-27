@@ -52,15 +52,13 @@ async function handleLogin() {
     const { user, token } = response.data
 
     authStore.setAuth(user, token)
-    console.log(response.data) 
 
-    alert('Login feito com sucesso!')
-    router.push('/dashboard')
+    router.push('/rides')
   } catch (error: any) {
     if (error.response?.status === 401) {
-      errorMessage.value = 'Credenciais inválidas.'
+      errorMessage.value = 'Invalid Credentials.'
     } else {
-      errorMessage.value = 'Erro ao conectar. Tente novamente.'
+      errorMessage.value = 'Connection Error. Try again.'
     }
   }
 }

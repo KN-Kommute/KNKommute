@@ -46,7 +46,7 @@ async function handleCreateRide(rideData: RideData) {
     await fetchRides()
     showModal.value = false
   } catch (error) {
-    console.error('Erro ao criar viagem:', error)
+    console.error('Error creating rides:', error)
   }
 }
 
@@ -74,7 +74,7 @@ async function fetchRides() {
       ownerPhone: ride.phoneNumber,
     }));
   } catch (error) {
-    console.error('Erro ao buscar rides:', error);
+    console.error('Error fetching rides:', error);
   }
 }
 

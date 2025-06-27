@@ -62,6 +62,7 @@ databaseChangeLog:
                   type: VARCHAR(40)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: email
                   type: VARCHAR(100)

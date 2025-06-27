@@ -1,12 +1,7 @@
 <template>
   <div class="p-8">
-    <el-table :data="rides" style="width: 100%; border: none" :row-class-name="getRowClass"
+    <el-table :data="rides" style="width: 100%; border: none" :row-class-name="getRowClass">
       header-cell-class-name="custom-header">
-      <el-table-column label="Current User" align="left">
-        <template #default>
-          {{ authStore.user.id }}
-        </template>
-      </el-table-column>
       <el-table-column prop="owner" label="Owner" align="left" />
       <el-table-column prop="phoneNumber" label="Phone" align="left" />
       <el-table-column prop="date" label="Date" align="left" />
@@ -186,7 +181,7 @@ const confirmParticipation = async () => {
     pickupAddress.value = ''
     pickupTime.value = ''
   } catch (error) {
-    console.error('Erro ao participar na boleia:', error)
+    console.error('Failed to join the ride:', error)
   }
 }
 
@@ -239,7 +234,7 @@ const showRideToApprove = async (ride: any) => {
     const response = await api.get(`/rides/${ride.id}/participations`)
     pendingParticipations.value = response.data.filter(p => p.status === 'PENDING')
   } catch (error) {
-    console.error('Erro ao carregar participações:', error)
+    console.error('An error occurred while loading participations:', error)
   }
 }
 

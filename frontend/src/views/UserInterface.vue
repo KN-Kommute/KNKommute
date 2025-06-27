@@ -71,7 +71,7 @@ async function updateName() {
     message.value = res.data
     authStore.user.name = form.value.name
   } catch (err: any) {
-    error.value = err.response?.data || 'Erro ao atualizar o nome'
+    error.value = err.response?.data || 'Error updating the name.'
   }
 }
 
@@ -83,13 +83,13 @@ async function updatePhoneNumber() {
     message.value = res.data
     authStore.user.phoneNumber = form.value.phoneNumber
   } catch (err: any) {
-    error.value = err.response?.data || 'Erro ao atualizar o número'
+    error.value = err.response?.data || 'Error updating the number.'
   }
 }
 
 async function updatePassword() {
   if (form.value.newPassword !== form.value.confirmNewPassword) {
-    error.value = 'As passwords não coincidem.'
+    error.value = 'Passwords do not match.'
     return
   }
 
@@ -102,7 +102,7 @@ async function updatePassword() {
     form.value.newPassword = ''
     form.value.confirmNewPassword = ''
   } catch (err: any) {
-    error.value = err.response?.data || 'Erro ao atualizar a password'
+    error.value = err.response?.data || 'Error updating the password'
   }
 }
 

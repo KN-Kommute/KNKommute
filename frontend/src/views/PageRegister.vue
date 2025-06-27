@@ -124,13 +124,12 @@ async function handleRegister() {
       }
     })
 
-    alert('Conta criada com sucesso!')
     router.push('/login')
   } catch (error: any) {
     if (error.response) {
-      apiError.value = error.response.data || 'Erro ao registrar.'
+      apiError.value = error.response.data || 'Registration error.'
     } else {
-      apiError.value = 'Erro de rede. Verifique o backend.'
+      apiError.value = 'Connection Error. Try again.'
     }
   }
 }
