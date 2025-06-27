@@ -1,27 +1,35 @@
 <template>
   <div class="p-8">
     <el-table :data="rides" style="width: 100%; border: none" :row-class-name="getRowClass">
-      header-cell-class-name="custom-header">
-      <el-table-column prop="owner" label="Owner" align="left" />
-      <el-table-column prop="phoneNumber" label="Phone" align="left" />
-      <el-table-column prop="date" label="Date" align="left" />
-      <el-table-column prop="from" label="From" align="left" />
-      <el-table-column prop="to" label="To" align="left" />
-      <el-table-column prop="time" label="Time" align="left" />
-      <el-table-column prop="value" label="Total value" align="left" />
+      <!--header-cell-class-name="custom-header"-->
+      <el-table-column prop="owner" label="Owner" align="left" min-width="70" />
+      <el-table-column prop="phoneNumber" label="Phone" align="left" min-width="70"/>
+      <el-table-column prop="date" label="Date" align="left" min-width="70"/>
+      <el-table-column prop="from" label="From" align="left" min-width="70"/>
+      <el-table-column prop="to" label="To" align="left" min-width="70"/>
+      <el-table-column prop="time" label="Time" align="left" min-width="70"/>
+      <el-table-column prop="value" label="Cost" align="left" min-width="40"/>
       <el-table-column label="" align="left">
         <template #default="scope">
           <div class="action-buttons">
             <el-button size="small" class="details-btn" @click="showRideDetails(scope.row)">
               Details
             </el-button>
-            <el-button size="small" class="participate-btn" :class="scope.row.participating ? 'cancel' : 'participate'"
-              @click="handleParticipation(scope.row)" v-if="scope.row.ownerId !== authStore.user.id">
+            <el-button size="small" class="participate-btn"
+                       :class="scope.row.participating ? 'cancel' : 'participate'"
+                       @click="handleParticipation(scope.row)"
+                       v-if="scope.row.ownerId !== authStore.user.id">
               {{ scope.row.participating ? 'Cancel' : 'Participate' }}
             </el-button>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="" align="left">
+        <template #default="scope">
+          <div class="action-buttons">
             <el-button size="small" class="approve-btn" @click="showRideToApprove(scope.row)"
-              v-if="scope.row.ownerId === authStore.user.id">
-              Rides to Approve
+                       v-if="scope.row.ownerId === authStore.user.id">
+              Participations
             </el-button>
           </div>
         </template>
@@ -42,17 +50,20 @@
         <p><strong>Total participants of this ride:</strong> {{ selectedRide.participantCount }}</p>
 
 
-        <el-form-item label="Pickup address">
+        <el-form-item>
           <el-input v-model="pickupAddress" placeholder="Enter your pickup location" clearable />
         </el-form-item>
 
-        <el-form-item label="Pickup date and time">
-          <el-date-picker v-model="pickupTime" type="datetime" placeholder="Select pickup date and time"
-            format="YYYY-MM-DD HH:mm" value-format="YYYY-MM-DDTHH:mm" style="width: 100%" />
+        <el-form-item>
+          <el-date-picker v-model="pickupTime" type="datetime"
+                          placeholder="Select pickup date and time"
+                          format="YYYY-MM-DD HH:mm" value-format="YYYY-MM-DDTHH:mm"
+                          style="width: 100%" />
         </el-form-item>
         <div class="modal-footer">
           <el-button @click="showModal = false">Go back</el-button>
-          <el-button type="primary" @click="openConfirmModal" :disabled="!pickupAddress.trim() || !pickupTime">
+          <el-button type="primary" @click="openConfirmModal"
+                     :disabled="!pickupAddress.trim() || !pickupTime">
             Participate
           </el-button>
         </div>
@@ -60,12 +71,13 @@
     </el-dialog>
 
     <!-- Modal confirmação participação -->
-    <el-dialog v-model="showConfirmParticipationModal" title="Confirm Participation" width="400px" center top="23vh">
+    <el-dialog v-model="showConfirmParticipationModal" title="Confirm Participation" width="400px"
+               center top="23vh">
       <div class="modal-content">
         <p>Are you sure you want to participate in this ride?</p>
         <div class="modal-footer">
           <el-button @click="showConfirmParticipationModal = false">No</el-button>
-          <el-button type="primary" @click="confirmParticipation"> Yes, participate </el-button>
+          <el-button type="primary" @click="confirmParticipation"> Yes, participate</el-button>
         </div>
       </div>
     </el-dialog>
@@ -76,7 +88,7 @@
         <p>Are you sure you want to cancel your participation?</p>
         <div class="modal-footer">
           <el-button @click="showCancelModal = false">No</el-button>
-          <el-button type="danger" @click="confirmCancel">Yes, cancel</el-button>
+          <el-button type="danger" @click="confirmCancel()">Yes, cancel</el-button>
         </div>
       </div>
     </el-dialog>
@@ -85,12 +97,12 @@
     <el-dialog v-model="showDetailsModal" title="Ride Details" width="400px" center>
       <div class="modal-content">
         <p><strong>Owner:</strong> {{ selectedDetailsRide.owner }}</p>
-        <p><strong>Contact:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
+        <p><strong>Phone:</strong> {{ selectedDetailsRide.phoneNumber }}</p>
         <p><strong>Date:</strong> {{ selectedDetailsRide.date }}</p>
         <p><strong>From:</strong> {{ selectedDetailsRide.from }}</p>
         <p><strong>To:</strong> {{ selectedDetailsRide.to }}</p>
         <p><strong>Time:</strong> {{ selectedDetailsRide.time }}h</p>
-        <p><strong>Total value:</strong> {{ selectedDetailsRide.value }}</p>
+        <p><strong>Cost:</strong> {{ selectedDetailsRide.value }}</p>
         <div class="modal-footer">
           <el-button @click="showDetailsModal = false">Close</el-button>
         </div>
@@ -103,27 +115,33 @@
         <!-- TABELA DE PEDIDOS -->
         <table class="Profile__table">
           <thead>
-            <tr>
-              <th>Participant</th>
-              <th>Location</th>
-              <th>Time</th>
-              <th>Actions</th>
-            </tr>
+          <tr>
+            <th>Participant</th>
+            <th>Location</th>
+            <th>Time</th>
+            <th>Actions</th>
+          </tr>
           </thead>
           <tbody>
-            <tr v-for="participant in pendingParticipations" :key="participant.id">
-              <td>{{ participant.participantName }}</td>
-              <td>{{ participant.pickupLocation }}</td>
-              <td>{{ participant.pickupTime }}</td>
-              <td>
-                <button @click="acceptParticipation(participant)" :disabled="participant.status !== 'PENDING'">
-                  ✓ Accept
-                </button>
-                <button class="Profile__btn Profile__btn--reject" @click="rejectParticipation(participant)">
-                  ✕ Reject
-                </button>
-              </td>
-            </tr>
+          <tr v-if="pendingParticipations.length === 0">
+            <td colspan="4" style="text-align: center; padding: 20px;">
+              <img src="@/assets/car_repair.png" alt="No Rides" class="Rides__no-rides-image"
+                   style="width: 80px; opacity: 0.7;" />
+              <p class="PageLayout__no-rides-text">You don’t have any pending participations.</p>
+            </td>
+          </tr>
+
+          <tr v-for="participant in pendingParticipations" :key="participant.id">
+            <td>{{ participant.participantName }}</td>
+            <td>{{ participant.pickupLocation }}</td>
+            <td>{{ participant.pickupTime }}</td>
+            <td>
+              <el-button type="success" @click="acceptParticipation(participant)">✓ Accept
+              </el-button>
+              <el-button type="danger" @click="rejectParticipation(participant)">✕ Reject
+              </el-button>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -148,8 +166,8 @@ const pendingParticipations = ref<any[]>([])
 defineProps({
   rides: {
     type: Array as PropType<Ride[]>,
-    required: true,
-  },
+    required: true
+  }
 })
 
 const showModal = ref(false)
@@ -172,7 +190,7 @@ const confirmParticipation = async () => {
   try {
     await api.post(`/rides/${selectedRide.value.id}/participation`, {
       pickupLocation: pickupAddress.value,
-      pickupTime: pickupTime.value, // já em ISO tipo: 2025-06-27T08:30
+      pickupTime: pickupTime.value // já em ISO tipo: 2025-06-27T08:30
     })
 
     selectedRide.value.participating = true
@@ -197,17 +215,27 @@ const handleParticipation = (ride: any) => {
   }
 }
 
+
+
+
 const acceptParticipation = async (arg) => {
-  console.log('acceptParticipation')
-  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/accept`, {
-  })
+  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/accept`, {})
+  await fetchParticipations(arg.rideId)
 }
 
 
 const rejectParticipation = async (arg) => {
-  console.log('rejectParticipation')
-  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/reject`, {
-  })
+  await api.post(`/rides/${arg.rideId}/participation/${arg.id}/reject`, {})
+  await fetchParticipations(arg.rideId)
+}
+
+async function fetchParticipations(rideId) {
+  try {
+    const response = await api.get(`/rides/${rideId}/participations`)
+    pendingParticipations.value = response.data.filter(p => p.status === 'PENDING')
+  } catch (error) {
+    console.error('Error fetching participations:', error)
+  }
 }
 
 
@@ -217,9 +245,15 @@ const openConfirmModal = () => {
   }
 }
 
-const confirmCancel = () => {
+const confirmCancel = async () => {
   cancelTargetRide.value.participating = false
   showCancelModal.value = false
+  try {
+    await api.post(`/rides/${cancelTargetRide.value.id}/participation/user/${authStore.user.id}/cancel`, {})
+  } catch (error) {
+    console.error('An error occurred while cancel participation:', error)
+  }
+
 }
 
 const showRideDetails = (ride: any) => {
@@ -263,7 +297,7 @@ const getRowClass = ({ row }: any) => {
   border: ' none';
 }
 
-.el-table>>>.el-table__header th.custom-header {
+.el-table >>> .el-table__header th.custom-header {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 13px;
@@ -283,7 +317,7 @@ const getRowClass = ({ row }: any) => {
   background-color: #fff;
 }
 
-.el-table__body tr:hover>td {
+.el-table__body tr:hover > td {
   background-color: #f9fafb;
 }
 

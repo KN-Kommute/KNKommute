@@ -10,4 +10,6 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     List<Participation> findByRide(Ride ride);
     boolean existsByRideIdAndUserId(Long rideId, Long userId);
     List<Participation> findByRideOrderByIdAsc(Ride ride);
+    List<Participation> findByUserId(Long userId);
+    void deleteByRideIdAndUserId(Long rideId, Long userId);
 }

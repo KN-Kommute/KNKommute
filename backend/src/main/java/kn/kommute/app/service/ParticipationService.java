@@ -1,7 +1,6 @@
 package kn.kommute.app.service;
 
 import kn.kommute.app.dto.ParticipationDTO;
-import kn.kommute.app.mapper.ParticipationMapper;
 import kn.kommute.app.model.Participation;
 import kn.kommute.app.model.Ride;
 import kn.kommute.app.model.User;
@@ -10,6 +9,7 @@ import kn.kommute.app.repository.RideRepository;
 import kn.kommute.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,9 +20,6 @@ public class ParticipationService {
 
     @Autowired
     private ParticipationRepository participationRepository;
-
-    @Autowired
-    private ParticipationMapper participationMapper;
 
     @Autowired
     private RideRepository rideRepository;
@@ -98,6 +95,12 @@ public class ParticipationService {
         participationRepository.delete(participation);
     }
 
+
+    @Transactional
+    public void cancelParticipation(Long rideId, Long userId){
+        participationRepository.deleteByRideIdAndUserId(rideId, userId);
+    }
+
     public List<ParticipationDTO> listByRide(Long rideId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
@@ -120,6 +123,30 @@ public class ParticipationService {
 
         return dtos;
     }
+
+    public List<ParticipationDTO> listByUser(Long userId) {
+
+        List<Participation> participations = participationRepository.findByUserId(userId);
+        List<ParticipationDTO> dtos = new ArrayList<>();
+
+        for (Participation participation : participations) {
+            //dtos.add(participationMapper.toDTO(participation));
+
+            ParticipationDTO dto = new ParticipationDTO();
+            dto.setId(participation.getId());
+            dto.setRideId(participation.getRide().getId());
+            dto.setParticipantId(participation.getUser().getId());
+            dto.setParticipantName(participation.getUser().getName());
+            dto.setParticipantPhoneNumber(participation.getUser().getPhoneNumber());
+            dto.setPickupLocation(participation.getPickupLocation());
+            dto.setPickupTime(participation.getPickupTime());
+            dto.setStatus(participation.getStatus());
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
 
     public List<ParticipationDTO> listAcceptedByRide(Long rideId, Long ownerId) {
         Ride ride = rideRepository.findById(rideId)

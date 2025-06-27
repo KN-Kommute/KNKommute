@@ -2,6 +2,7 @@ package kn.kommute.app.controller;
 
 import kn.kommute.app.dto.ParticipationDTO;
 import kn.kommute.app.dto.RideDTO;
+import kn.kommute.app.mapper.ParticipationMapper;
 import kn.kommute.app.mapper.RideMapper;
 import kn.kommute.app.model.Participation;
 import kn.kommute.app.model.Ride;
@@ -15,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import kn.kommute.app.service.ParticipationService;
-import kn.kommute.app.mapper.ParticipationMapper;
 
 import java.util.List;
 
@@ -27,13 +27,14 @@ public class RideController {
     @Autowired
     private final RideMapper rideMapper;
     @Autowired
-    private ParticipationService participationService;
+    private final ParticipationMapper participationMapper;
     @Autowired
-    private ParticipationMapper participationMapper;
+    private ParticipationService participationService;
 
-    public RideController(RideService rideService, RideMapper rideMapper) {
+    public RideController(RideService rideService, RideMapper rideMapper, ParticipationMapper participationMapper) {
         this.rideService = rideService;
         this.rideMapper = rideMapper;
+        this.participationMapper = participationMapper;
     }
 
     @PostMapping("/create")
@@ -100,9 +101,22 @@ public class RideController {
         return ResponseEntity.ok().build();
 }
 
+    @PostMapping("/{rideId}/participation/user/{userId}/cancel")
+    public ResponseEntity<Void> cancelParticipation(@AuthenticationPrincipal User rideOwner, @PathVariable Long rideId, @PathVariable Long userId
+    ) {
+        participationService.cancelParticipation(rideId, userId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{rideId}/participations")
     public ResponseEntity<List<ParticipationDTO>> listParticipationOfRide(@PathVariable Long rideId) {
         return ResponseEntity.ok(participationService.listByRide(rideId));
     }
+
+    @GetMapping("/participations/{userId}")
+    public ResponseEntity<List<ParticipationDTO>> listParticipationOfUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(participationService.listByUser(userId));
+    }
+
 
 }

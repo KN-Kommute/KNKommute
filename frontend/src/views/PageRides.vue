@@ -52,13 +52,22 @@ async function handleCreateRide(rideData: RideData) {
 
 async function fetchRides() {
   try {
-    const response = await api.get('/rides', {
+    const responseRides = await api.get('/rides', {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+      },
+
+    });
+
+    const responseParticipations = await api.get(`/rides/participations/${authStore.user.id}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
       },
     });
 
-    rides.value = response.data.map((ride: any) => ({
+    rides.value = responseRides.data.map(function (ride: any){
+      var participating = responseParticipations.data.some(p => p.rideId === ride.id);
+      return({
       ...ride,
       from: ride.origin,
       to: ride.destination,
@@ -68,11 +77,11 @@ async function fetchRides() {
         minute: '2-digit',
       }),
       value: `${ride.totalValue}€`,
-      participating: false,
+      participating: participating,
       ownerId: ride.ownerId,
       owner: ride.ownerName,
       ownerPhone: ride.phoneNumber,
-    }));
+    })});
   } catch (error) {
     console.error('Error fetching rides:', error);
   }
